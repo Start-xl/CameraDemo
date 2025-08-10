@@ -2,6 +2,8 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QTimer>
+#include "IMVAPI/IMVApi.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -18,6 +20,27 @@ public:
     ~MainWindow();
 
 private:
+    void initUi();
+
+private slots:
+    void onTimerStreamStatistic();
+
+    void on_deviceModel_CBox_currentIndexChanged(int index);
+
+    void on_openDevice_Btn_clicked();
+
+    void on_closeDevice_Btn_clicked();
+
+    void on_startGrab_Btn_clicked();
+
+    void on_stopGrab_Btn_clicked();
+
+    void closeEvent(QCloseEvent *event);
+
+private:
     Ui::MainWindow *ui;
+
+    IMV_DeviceList m_deviceInfoList;	// 发现的相机列表 | List of cameras found
+    QTimer m_staticTimer;				// 定时器，定时刷新状态栏信息 | Timer, refresh status bar information regularly
 };
 #endif // MAINWINDOW_H

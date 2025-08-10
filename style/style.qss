@@ -100,7 +100,7 @@ QPushButton
     border-style: solid;
     border-radius: 6;
     padding: 3px;
-    font-size: 12px;
+    font-size: 15px;
     padding-left: 5px;
     padding-right: 5px;
 }
@@ -110,6 +110,13 @@ QPushButton:pressed
     background-color: QLinearGradient( x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #2d2d2d, stop: 0.1 #2b2b2b, stop: 0.5 #292929, stop: 0.9 #282828, stop: 1 #252525);
 }
 
+QPushButton:disabled
+{
+    color: #888888; /* 更亮的灰色，与深色背景对比更明显 */
+    background-color: QLinearGradient( x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #404040, stop: 1 #383838); /* 可选：略微调暗背景，强化不可用视觉效果 */
+    border-color: #333333; /* 可选：边框颜色也略亮，避免过于沉闷 */
+}
+
 QComboBox
 {
     selection-background-color: #ffaa00;
@@ -117,6 +124,9 @@ QComboBox
     border-style: solid;
     border: 1px solid #1e1e1e;
     border-radius: 5;
+    color: #b1b1b1;
+    font-size: 16px;
+    padding: 2px 5px;
 }
 
 QComboBox:hover,QPushButton:hover
@@ -131,12 +141,45 @@ QComboBox:on
     padding-left: 4px;
     background-color: QLinearGradient( x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #2d2d2d, stop: 0.1 #2b2b2b, stop: 0.5 #292929, stop: 0.9 #282828, stop: 1 #252525);
     selection-background-color: #ffaa00;
+    font-size: 16px; /* 保持与正常状态一致 */
 }
 
 QComboBox QAbstractItemView
 {
     border: 2px solid darkgray;
     selection-background-color: QLinearGradient( x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #ffa02f, stop: 1 #d7801a);
+    min-width: 150px; /* 可选：设置下拉列表的最小宽度，避免过窄 */
+    padding: 2px; /* 列表内部与项之间的间距 */
+}
+
+
+/* 下拉列表项的字体大小（可选，与QComboBox保持一致） */
+QComboBox QAbstractItemView::item
+{
+    font-size: 16px; /* 与QComboBox保持一致 */
+    min-height: 30px; /* 关键：设置项的最小高度，解决"太窄"问题（可根据需求调整） */
+    padding: 6px 10px; /* 上下内边距增加高度，左右内边距增加宽度，让项更舒展 */
+    margin: 1px 0; /* 项之间的间距，可选 */
+}
+
+QComboBox QAbstractItemView::item:hover
+{
+    min-height: 30px; /* 与正常项高度一致 */
+}
+
+/* 下拉项选中状态的高度保持一致 */
+QComboBox QAbstractItemView::item:selected
+{
+    min-height: 30px; /* 与正常项高度一致 */
+}
+
+/* 不可用状态的字体大小保持一致 */
+QComboBox:disabled
+{
+    color: #888888;
+    background-color: QLinearGradient( x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #404040, stop: 1 #383838);
+    border-color: #333333;
+    font-size: 16px; /* 与正常状态一致 */
 }
 
 QComboBox::drop-down
@@ -151,6 +194,20 @@ QComboBox::drop-down
      border-top-right-radius: 3px; /* same radius as the QComboBox */
      border-bottom-right-radius: 3px;
  }
+
+QComboBox:disabled
+{
+    color: #888888; /* 更亮的字体颜色，提升对比度 */
+    background-color: QLinearGradient( x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #404040, stop: 1 #383838); /* 略暗的背景，区分可用状态 */
+    border-color: #333333; /* 边框颜色调亮，避免过于沉闷 */
+}
+
+QComboBox QAbstractItemView::item:disabled
+{
+    color: #666666; /* 下拉项不可用时的颜色，比控件本身稍暗 */
+    background-color: #323232;
+    min-height: 30px; /* 与正常项高度一致 */
+}
 
 QGroupBox:focus
 {

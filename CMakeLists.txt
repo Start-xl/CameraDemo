@@ -9,6 +9,19 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# 将include文件夹加入头文件搜索路径
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
+
+# 检测架构(32/64位)
+if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+    set(ARCHITECTURE "x64")
+else()
+    set(ARCHITECTURE "win32")
+endif()
+
+# 库文件目录
+set(LIB_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Depends/${ARCHITECTURE}/vs2013shared")
+
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
 
@@ -39,11 +52,16 @@ else()
         add_executable(CameraDemo
             ${PROJECT_SOURCES}
             resource.qrc
+            CameraWgt.h CameraWgt.cpp CameraWgt.ui
         )
     endif()
 endif()
 
-target_link_libraries(CameraDemo PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
+target_link_libraries(
+    CameraDemo PRIVATE Qt${QT_VERSION_MAJOR}::Widgets
+    "${LIB_DIR}/MVSDKmd.lib"
+    "${LIB_DIR}/VideoRender.lib"
+)
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
 # If you are developing for iOS or macOS you should consider setting an
