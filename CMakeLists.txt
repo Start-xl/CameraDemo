@@ -38,6 +38,7 @@ else()
     else()
         add_executable(CameraDemo
             ${PROJECT_SOURCES}
+            resource.qrc
         )
     endif()
 endif()
