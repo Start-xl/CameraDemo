@@ -42,5 +42,7 @@ private:
 
     IMV_DeviceList m_deviceInfoList;	// 发现的相机列表 | List of cameras found
     QTimer m_staticTimer;				// 定时器，定时刷新状态栏信息 | Timer, refresh status bar information regularly
+    QString deviceName;
+    QString deviceIP;
 };
 #endif // MAINWINDOW_H

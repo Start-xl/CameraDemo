@@ -23,24 +23,21 @@ void MainWindow::initUi() {
     ui->statistic_Lab->setText("");// 连接相机之前不显示状态栏 | Don't show status bar before connecting camera
 
     ret = IMV_EnumDevices(&m_deviceInfoList, interfaceTypeAll);
-    if (IMV_OK != ret)
-    {
+    if (IMV_OK != ret) {
         printf("Enumeration devices failed! ErrorCode[%d]\n", ret);
         return;
     }
-    if (m_deviceInfoList.nDevNum < 1)
-    {
+    if (m_deviceInfoList.nDevNum < 1) {
         ui->deviceModel_CBox->setEnabled(false);
         ui->openDevice_Btn->setEnabled(false);
-    }
-    else
-    {
+    } else {
         ui->deviceModel_CBox->setEnabled(true);
         ui->openDevice_Btn->setEnabled(true);
 
-        for (unsigned int i = 0; i < m_deviceInfoList.nDevNum; i++)
-        {
-            ui->deviceModel_CBox->addItem(m_deviceInfoList.pDevInfo[i].cameraKey);
+        for (unsigned int i = 0; i < m_deviceInfoList.nDevNum; i++) {
+            deviceName = m_deviceInfoList.pDevInfo[i].cameraName;
+            deviceIP = m_deviceInfoList.pDevInfo[i].DeviceSpecificInfo.gigeDeviceInfo.ipAddress;
+            ui->deviceModel_CBox->addItem(deviceName + " (" + deviceIP + ")");
         }
 
         ui->cameraWgt->SetCamera(m_deviceInfoList.pDevInfo[0].cameraKey);
@@ -139,14 +136,12 @@ void MainWindow::on_stopGrab_Btn_clicked() {
     ui->stopGrab_Btn->setEnabled(false);
 }
 
-void MainWindow::onTimerStreamStatistic()
-{
+void MainWindow::onTimerStreamStatistic() {
     QString strStatic = ui->cameraWgt->getStatistic();
     ui->statistic_Lab->setText(strStatic);
 }
 
-void MainWindow::closeEvent(QCloseEvent * event)
-{
+void MainWindow::closeEvent(QCloseEvent * event) {
     on_stopGrab_Btn_clicked();
     ui->cameraWgt->CameraClose();
 }
