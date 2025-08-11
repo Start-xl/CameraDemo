@@ -149,7 +149,7 @@ QComboBox QAbstractItemView
     border: 2px solid darkgray;
     selection-background-color: QLinearGradient( x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #ffa02f, stop: 1 #d7801a);
     min-width: 150px; /* 可选：设置下拉列表的最小宽度，避免过窄 */
-    padding: 2px; /* 列表内部与项之间的间距 */
+    padding: 4px; /* 列表内部与项之间的间距 */
 }
 
 
@@ -159,7 +159,7 @@ QComboBox QAbstractItemView::item
     font-size: 16px; /* 与QComboBox保持一致 */
     min-height: 30px; /* 关键：设置项的最小高度，解决"太窄"问题（可根据需求调整） */
     padding: 6px 10px; /* 上下内边距增加高度，左右内边距增加宽度，让项更舒展 */
-    margin: 1px 0; /* 项之间的间距，可选 */
+    margin: 4px 0; /* 项之间的间距，可选 */
 }
 
 QComboBox QAbstractItemView::item:hover
