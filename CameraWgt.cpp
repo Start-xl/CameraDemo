@@ -1,5 +1,6 @@
 #include "CameraWgt.h"
 #include "ui_CameraWgt.h"
+#include <QDebug>
 
 #define DEFAULT_SHOW_RATE (30) // 默认显示帧率 | defult display frequency
 #define DEFAULT_ERROR_STRING ("N/A")
@@ -79,10 +80,20 @@ CameraWgt::CameraWgt(QWidget *parent)
     , m_nTotalFrameCount(0)
     , m_isExitDisplayThread(false)
     , m_threadHandle(NULL)
+    , m_displayWnd(nullptr)
+    , m_videoWidth(0)
+    , m_videoHeight(0)
 {
     ui->setupUi(this);
 
-    m_hWnd = (VR_HWND)this->winId();
+    // 创建一个 native 子窗口，让 VideoRender 渲染到这个子窗口
+    m_displayWnd = new QWidget(this);
+    m_displayWnd->setAttribute(Qt::WA_NativeWindow);      // 确保有原生窗口句柄
+    m_displayWnd->setAttribute(Qt::WA_NoSystemBackground);
+    m_displayWnd->setStyleSheet("background: black;");   // 背景黑边
+    m_displayWnd->show();
+
+    m_hWnd = (VR_HWND)m_displayWnd->winId();
 
     // 默认显示30帧
     // defult display 30 frames
@@ -400,29 +411,18 @@ void CameraWgt::SetCamera(const QString& strKey)
 // diaplay
 bool CameraWgt::ShowImage(unsigned char* pRgbFrameBuf, int nWidth, int nHeight, IMV_EPixelType nPixelFormat)
 {
-    if (NULL == pRgbFrameBuf ||
-        nWidth == 0 ||
-        nHeight == 0)
-    {
-        printf("%s image is invalid.\n");
+    if (NULL == pRgbFrameBuf || nWidth == 0 || nHeight == 0) {
         return false;
     }
 
-    if (NULL == m_handler)
-    {
-        openRender(nWidth, nHeight);
-        if (NULL == m_handler)
-        {
-            return false;
-        }
-    }
+    // 记录视频的原始分辨率（用于 resizeEvent 中保持比例）
+    m_videoWidth  = nWidth;
+    m_videoHeight = nHeight;
 
-    uint32_t width = (uint32_t)nWidth;
-    uint32_t height = (uint32_t)nHeight;
-    if (m_params.nWidth != width || m_params.nHeight != height)
-    {
-        closeRender();
-        openRender(width, height);
+    if (NULL == m_handler) {
+        if (!openRender(nWidth, nHeight) && NULL == m_handler) {
+                return false;
+        }
     }
 
     VR_FRAME_S renderParam = { 0 };
@@ -439,8 +439,7 @@ bool CameraWgt::ShowImage(unsigned char* pRgbFrameBuf, int nWidth, int nHeight, 
         renderParam.format = VR_PIXEL_FMT_RGB24;
     }
 
-    if (VR_SUCCESS == VR_RenderFrame(m_handler, &renderParam, NULL))
-    {
+    if (VR_SUCCESS == VR_RenderFrame(m_handler, &renderParam, NULL)) {
         return true;
     }
     return false;
@@ -537,6 +536,45 @@ void CameraWgt::display()
             free(pRGBbuffer);
         }
     }
+}
+
+void CameraWgt::resizeEvent(QResizeEvent *event) {
+    QWidget::resizeEvent(event);
+
+    if (!m_displayWnd) return;
+
+    int widgetW = this->width();
+    int widgetH = this->height();
+
+    int targetW = widgetW;
+    int targetH = widgetH;
+
+    if (m_videoWidth > 0 && m_videoHeight > 0) {
+        double widgetAspect = (double)widgetW / (double)widgetH;
+        double videoAspect  = (double)m_videoWidth / (double)m_videoHeight;
+
+        if (widgetAspect > videoAspect) {
+            // widget 比视频更宽，以高度为基准
+            targetH = widgetH;
+            targetW = int(targetH * videoAspect);
+        } else {
+            // 以宽度为基准
+            targetW = widgetW;
+            targetH = int(targetW / videoAspect);
+        }
+    } else {
+        // 还没收到帧，就把子窗口填满整个 widget
+        targetW = widgetW;
+        targetH = widgetH;
+    }
+
+    int offsetX = (widgetW - targetW) / 2;
+    int offsetY = (widgetH - targetH) / 2;
+
+    // 设置子窗口 Geometry（在 UI 线程安全）
+    m_displayWnd->setGeometry(offsetX, offsetY, targetW, targetH);
+
+    // 注意：不需要在每次 resize 时重建 VR_Handle，VideoRender 会自动把内容绘制到子窗口的当前大小
 }
 
 
@@ -707,10 +745,7 @@ void CameraWgt::recvNewFrame(quint32 frameSize)
 // VedioRender releative display start
 bool CameraWgt::openRender(int width, int height)
 {
-    if (NULL != m_handler ||
-        0 == width ||
-        0 == height)
-    {
+    if (NULL != m_handler || 0 == width || 0 == height) {
         return false;
     }
 

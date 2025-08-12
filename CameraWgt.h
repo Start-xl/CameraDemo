@@ -112,6 +112,9 @@ public:
 
     void display();
 
+protected:
+    void resizeEvent(QResizeEvent *event) override;
+
 private:
 
     // 设置显示频率，默认一秒钟显示30帧
@@ -124,7 +127,7 @@ private:
 
     // 窗口关闭响应函数
     // Window close response function
-    void closeEvent(QCloseEvent * event);
+    void closeEvent(QCloseEvent * event)override;
 
     // 显示一帧图像
     // display a frame image
@@ -139,6 +142,12 @@ public:
     TMessageQue<CFrameInfo>				m_qDisplayFrameQueue;		// 显示队列      | diaplay queue
 
 private:
+    // 新增：用于承载 VideoRender 的 native子窗口（我们会按比例改变它的大小）
+    QWidget *m_displayWnd;
+    int m_videoWidth;   // 收到的帧宽（原始分辨率）
+    int m_videoHeight;  // 收到的帧高
+
+
     Ui::CameraWgt *ui;
 
     QString								m_currentCameraKey;			// 当前相机key | current camera key
