@@ -93,6 +93,7 @@ CameraWgt::CameraWgt(QWidget *parent)
     m_displayWnd->setStyleSheet("background: black;");   // 背景黑边
     m_displayWnd->show();
 
+    // 使用子窗口 winId作为 VideoRender的目标窗口
     m_hWnd = (VR_HWND)m_displayWnd->winId();
 
     // 默认显示30帧
@@ -172,23 +173,19 @@ bool CameraWgt::CameraOpen(void)
 {
     int ret = IMV_OK;
 
-    if (m_currentCameraKey.length() == 0)
-    {
-        printf("open camera fail. No camera.\n");
+    if (m_currentCameraKey.length() == 0) {
         return false;
     }
 
-    if (m_devHandle)
-    {
-        printf("m_devHandle is already been create!\n");
+    if (m_devHandle) {
         return false;
     }
     QByteArray cameraKeyArray = m_currentCameraKey.toLocal8Bit();
     char* cameraKey = cameraKeyArray.data();
 
+    //  创建相机句柄
     ret = IMV_CreateHandle(&m_devHandle, modeByCameraKey, (void*)cameraKey);
-    if (IMV_OK != ret)
-    {
+    if (IMV_OK != ret) {
         printf("create devHandle failed! cameraKey[%s], ErrorCode[%d]\n", cameraKey, ret);
         return false;
     }
@@ -415,9 +412,14 @@ bool CameraWgt::ShowImage(unsigned char* pRgbFrameBuf, int nWidth, int nHeight, 
         return false;
     }
 
-    // 记录视频的原始分辨率（用于 resizeEvent 中保持比例）
-    m_videoWidth  = nWidth;
-    m_videoHeight = nHeight;
+    bool firstFrame = false;
+
+    // 第一次收到视频分辨率
+    if (m_videoWidth == 0 || m_videoHeight == 0) {
+        m_videoWidth  = nWidth;
+        m_videoHeight = nHeight;
+        firstFrame = true;
+    }
 
     if (NULL == m_handler) {
         if (!openRender(nWidth, nHeight) && NULL == m_handler) {
@@ -440,6 +442,11 @@ bool CameraWgt::ShowImage(unsigned char* pRgbFrameBuf, int nWidth, int nHeight, 
     }
 
     if (VR_SUCCESS == VR_RenderFrame(m_handler, &renderParam, NULL)) {
+        if (firstFrame) {
+            QMetaObject::invokeMethod(this, [this]() {
+                this->resizeEvent(nullptr); // 强制执行一次缩放计算
+            }, Qt::QueuedConnection);
+        }
         return true;
     }
     return false;
@@ -541,7 +548,9 @@ void CameraWgt::display()
 void CameraWgt::resizeEvent(QResizeEvent *event) {
     QWidget::resizeEvent(event);
 
-    if (!m_displayWnd) return;
+    if (!m_displayWnd) {
+        return;
+    }
 
     int widgetW = this->width();
     int widgetH = this->height();
@@ -745,7 +754,7 @@ void CameraWgt::recvNewFrame(quint32 frameSize)
 // VedioRender releative display start
 bool CameraWgt::openRender(int width, int height)
 {
-    if (NULL != m_handler || 0 == width || 0 == height) {
+    if (m_handler != NULL || width == 0 || height == 0) {
         return false;
     }
 
@@ -756,14 +765,16 @@ bool CameraWgt::openRender(int width, int height)
     m_params.nHeight = height;
 
     VR_ERR_E ret = VR_Open(&m_params, &m_handler);
-    if (ret == VR_NOT_SUPPORT)
-    {
-        printf("%s cant't display YUV on this computer", __FUNCTION__);
+    if (ret != VR_SUCCESS) {
+        if (ret == VR_NOT_SUPPORT) {
+            printf("%s can't display YUV on this computer\n", __FUNCTION__);
+        } else {
+            printf("%s open failed. error code[%d]\n", __FUNCTION__, ret);
+        }
         return false;
     }
 
-    printf("%s open failed. error code[%d]", __FUNCTION__, ret);
-    return false;
+    return true; // 成功返回 true
 }
 
 bool CameraWgt::closeRender()
