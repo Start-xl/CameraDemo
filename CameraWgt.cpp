@@ -1,6 +1,7 @@
 #include "CameraWgt.h"
 #include "ui_CameraWgt.h"
 #include <QDebug>
+#include <QPainter>
 
 #define DEFAULT_SHOW_RATE (30) // 默认显示帧率 | defult display frequency
 #define DEFAULT_ERROR_STRING ("N/A")
@@ -90,7 +91,6 @@ CameraWgt::CameraWgt(QWidget *parent)
     m_displayWnd = new QWidget(this);
     m_displayWnd->setAttribute(Qt::WA_NativeWindow);      // 确保有原生窗口句柄
     m_displayWnd->setAttribute(Qt::WA_NoSystemBackground);
-    m_displayWnd->setStyleSheet("background: black;");   // 背景黑边
     m_displayWnd->show();
 
     // 使用子窗口 winId作为 VideoRender的目标窗口
@@ -585,7 +585,6 @@ void CameraWgt::resizeEvent(QResizeEvent *event) {
 
     // 注意：不需要在每次 resize 时重建 VR_Handle，VideoRender 会自动把内容绘制到子窗口的当前大小
 }
-
 
 bool CameraWgt::isTimeToDisplay()
 {

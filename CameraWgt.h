@@ -142,7 +142,7 @@ public:
     TMessageQue<CFrameInfo>				m_qDisplayFrameQueue;		// 显示队列      | diaplay queue
 
 private:
-    // 新增：用于承载 VideoRender 的 native子窗口（我们会按比例改变它的大小）
+    // 新增：用于承载 VideoRender 的 native子窗口（按比例改变它的大小）
     QWidget *m_displayWnd;
     int m_videoWidth;   // 收到的帧宽（原始分辨率）
     int m_videoHeight;  // 收到的帧高
