@@ -552,36 +552,17 @@ void CameraWgt::resizeEvent(QResizeEvent *event) {
         return;
     }
 
-    int widgetW = this->width();
-    int widgetH = this->height();
+    if (m_videoWidth == 0 || m_videoHeight == 0)
+        return;
 
-    int targetW = widgetW;
-    int targetH = widgetH;
-
-    if (m_videoWidth > 0 && m_videoHeight > 0) {
-        double widgetAspect = (double)widgetW / (double)widgetH;
-        double videoAspect  = (double)m_videoWidth / (double)m_videoHeight;
-
-        if (widgetAspect > videoAspect) {
-            // widget 比视频更宽，以高度为基准
-            targetH = widgetH;
-            targetW = int(targetH * videoAspect);
-        } else {
-            // 以宽度为基准
-            targetW = widgetW;
-            targetH = int(targetW / videoAspect);
-        }
-    } else {
-        // 还没收到帧，就把子窗口填满整个 widget
-        targetW = widgetW;
-        targetH = widgetH;
-    }
-
-    int offsetX = (widgetW - targetW) / 2;
-    int offsetY = (widgetH - targetH) / 2;
+    float scale = qMin(width() / (float)m_videoWidth, height() / (float)m_videoHeight);
+    int drawW = static_cast<int>(m_videoWidth * scale);
+    int drawH = static_cast<int>(m_videoHeight * scale);
+    int offsetX = (width() - drawW) / 2;
+    int offsetY = (height() - drawH) / 2;
 
     // 设置子窗口 Geometry（在 UI 线程安全）
-    m_displayWnd->setGeometry(offsetX, offsetY, targetW, targetH);
+    m_displayWnd->setGeometry(offsetX, offsetY, drawW, drawH);
 
     // 注意：不需要在每次 resize 时重建 VR_Handle，VideoRender 会自动把内容绘制到子窗口的当前大小
 }
