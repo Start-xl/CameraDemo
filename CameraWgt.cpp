@@ -2,6 +2,8 @@
 #include "ui_CameraWgt.h"
 #include <QDebug>
 #include <QPainter>
+#include <QTimer>
+#include <QtGlobal>
 
 #define DEFAULT_SHOW_RATE (30) // 默认显示帧率 | defult display frequency
 #define DEFAULT_ERROR_STRING ("N/A")
@@ -84,13 +86,16 @@ CameraWgt::CameraWgt(QWidget *parent)
     , m_displayWnd(nullptr)
     , m_videoWidth(0)
     , m_videoHeight(0)
+    , m_scaleFactor(1.0)
+    , m_offsetX(0)
+    , m_offsetY(0)
+    , m_isPanning(false)
 {
     ui->setupUi(this);
 
     // 创建一个 native 子窗口，让 VideoRender 渲染到这个子窗口
     m_displayWnd = new QWidget(this);
     m_displayWnd->setAttribute(Qt::WA_NativeWindow);      // 确保有原生窗口句柄
-    m_displayWnd->setAttribute(Qt::WA_NoSystemBackground);
     m_displayWnd->show();
 
     // 使用子窗口 winId作为 VideoRender的目标窗口
@@ -111,14 +116,10 @@ CameraWgt::CameraWgt(QWidget *parent)
                                              CREATE_SUSPENDED,
                                              NULL);
 
-    if (!m_threadHandle)
-    {
+    if (!m_threadHandle) {
         printf("Failed to create display thread!\n");
-    }
-    else
-    {
+    } else {
         ResumeThread(m_threadHandle);
-
         m_isExitDisplayThread = false;
     }
 }
@@ -250,7 +251,6 @@ bool CameraWgt::CameraStart()
         printf("camera is already grebbing.\n");
         return false;
     }
-
 
     ret = IMV_AttachGrabbing(m_devHandle, FrameCallback, this);
     if (IMV_OK != ret)
@@ -432,19 +432,16 @@ bool CameraWgt::ShowImage(unsigned char* pRgbFrameBuf, int nWidth, int nHeight, 
     renderParam.stride[0] = nWidth;
     renderParam.nWidth = nWidth;
     renderParam.nHeight = nHeight;
-    if (nPixelFormat == gvspPixelMono8)
-    {
+    if (nPixelFormat == gvspPixelMono8) {
         renderParam.format = VR_PIXEL_FMT_MONO8;
-    }
-    else
-    {
+    } else {
         renderParam.format = VR_PIXEL_FMT_RGB24;
     }
 
     if (VR_SUCCESS == VR_RenderFrame(m_handler, &renderParam, NULL)) {
         if (firstFrame) {
             QMetaObject::invokeMethod(this, [this]() {
-                this->resizeEvent(nullptr); // 强制执行一次缩放计算
+                updateDisplayGeometry();
             }, Qt::QueuedConnection);
         }
         return true;
@@ -548,23 +545,13 @@ void CameraWgt::display()
 void CameraWgt::resizeEvent(QResizeEvent *event) {
     QWidget::resizeEvent(event);
 
-    if (!m_displayWnd) {
+    if (!m_displayWnd || m_videoWidth == 0 || m_videoHeight == 0) {
         return;
     }
 
-    if (m_videoWidth == 0 || m_videoHeight == 0)
-        return;
-
-    float scale = qMin(width() / (float)m_videoWidth, height() / (float)m_videoHeight);
-    int drawW = static_cast<int>(m_videoWidth * scale);
-    int drawH = static_cast<int>(m_videoHeight * scale);
-    int offsetX = (width() - drawW) / 2;
-    int offsetY = (height() - drawH) / 2;
-
-    // 设置子窗口 Geometry（在 UI 线程安全）
-    m_displayWnd->setGeometry(offsetX, offsetY, drawW, drawH);
-
-    // 注意：不需要在每次 resize 时重建 VR_Handle，VideoRender 会自动把内容绘制到子窗口的当前大小
+    QTimer::singleShot(50, this, [this]() {
+        updateDisplayGeometry();
+    });
 }
 
 bool CameraWgt::isTimeToDisplay()
@@ -699,7 +686,7 @@ void CameraWgt::updateStatistic()
         }
     }
 
-    m_strStatistic = QString("Stream: %1 images   %2 FPS   %3 Mbps")
+    m_strStatistic = QString("Stream: %1 Images   %2 FPS   %3 Mbps")
                          .arg(m_nTotalFrameCount)
                          .arg(strFPS)
                          .arg(strSpeed);
@@ -728,6 +715,7 @@ void CameraWgt::recvNewFrame(quint32 frameSize)
 
     m_bNeedUpdate = true;
 }
+
 // 状态栏统计信息 end
 // Status bar statistics ending
 // VedioRender显示相关 start
@@ -765,4 +753,156 @@ bool CameraWgt::closeRender()
         m_handler = NULL;
     }
     return true;
+}
+
+/**
+ * @author xl-1/4
+ * @version 1.0
+ * @brief TODO 重写鼠标滚轮操作
+ * @date 2025-08-23
+ */
+void CameraWgt::wheelEvent(QWheelEvent *event) {
+    if (!m_displayWnd || m_videoWidth == 0 || m_videoHeight == 0) {
+        return;
+    }
+    // 获取鼠标位置
+    QPoint mousePos = event->position().toPoint();
+    // 获取当前显示窗口的位置
+    QRect currentRect = m_displayWnd->geometry();
+    // 计算鼠标在显示窗口中的相对位置（0-1）
+    float relativeX = 0.5f;
+    float relativeY = 0.5f;
+
+    if (currentRect.contains(mousePos)) {
+        relativeX = (mousePos.x() - currentRect.x()) / (float)currentRect.width();
+        relativeY = (mousePos.y() - currentRect.y()) / (float)currentRect.height();
+    }
+    float oldScale = m_scaleFactor;
+
+    // 滚轮方向：向上放大，向下缩小
+    if (event->angleDelta().y() > 0) {
+        m_scaleFactor *= 1.1f;  // 放大 10%
+    } else {
+        m_scaleFactor /= 1.1f;  // 缩小 10%
+    }
+
+    // 限制缩放范围，避免太大或太小
+    if (m_scaleFactor < 0.1f) m_scaleFactor = 0.1f;
+    if (m_scaleFactor > 5.0f) m_scaleFactor = 5.0f;
+
+    if (oldScale != m_scaleFactor) {
+        // 计算新的显示大小
+        float baseScale = qMin(width() / (float)m_videoWidth, height() / (float)m_videoHeight);
+        float newScale = baseScale * m_scaleFactor;
+        int newWidth = static_cast<int>(m_videoWidth * newScale);
+        int newHeight = static_cast<int>(m_videoHeight * newScale);
+
+        // 如果缩放后图像小于窗口，重置偏移为0（居中显示）
+        if (newWidth <= width()) {
+            m_offsetX = 0;
+        } else {
+            // 调整偏移量，使鼠标下的点保持不动
+            float widthDelta = newWidth - currentRect.width();
+            m_offsetX -= widthDelta * relativeX;
+        }
+        if (newHeight <= height()) {
+            m_offsetY = 0;
+        } else {
+            float heightDelta = newHeight - currentRect.height();
+            m_offsetY -= heightDelta * relativeY;
+        }
+        updateDisplayGeometry();
+    }
+}
+
+void CameraWgt::updateDisplayGeometry() {
+    if(!m_displayWnd || m_videoWidth == 0 || m_videoHeight == 0) {
+        return;
+    }
+
+    // 计算基础缩放 (适应窗口)
+    float baseScale = qMin(width() / (float)m_videoWidth, height() / (float)m_videoHeight);
+    // 叠加缩放因子
+    float scale = baseScale * m_scaleFactor;
+
+    // 计算显示大小
+    int displayWidth = static_cast<int>(m_videoWidth * scale);
+    int displayHeight = static_cast<int>(m_videoHeight * scale);
+
+    // 计算居中位置
+    int centerX = (width() - displayWidth) / 2;
+    int centerY = (height() - displayHeight) / 2;
+
+    // 应用平移偏移
+    int finalX = centerX + m_offsetX;
+    int finalY = centerY + m_offsetY;
+
+    // 限制拖动范围，确保图像不能拖出窗口外
+    // 左边界不能大于0（图像左边不能离开窗口左边）
+    if (finalX > 0) {
+        finalX = 0;
+        m_offsetX = finalX - centerX;
+    }
+    // 上边界不能大于0（图像上边不能离开窗口上边）
+    if (finalY > 0) {
+        finalY = 0;
+        m_offsetY = finalY - centerY;
+    }
+    // 右边界不能小于窗口宽度（图像右边不能离开窗口右边）
+    if (finalX + displayWidth < width()) {
+        finalX = width() - displayWidth;
+        m_offsetX = finalX - centerX;
+    }
+    // 下边界不能小于窗口高度（图像下边不能离开窗口下边）
+    if (finalY + displayHeight < height()) {
+        finalY = height() - displayHeight;
+        m_offsetY = finalY - centerY;
+    }
+
+    // 如果图像比窗口小，则居中显示
+    if (displayWidth <= width()) {
+        finalX = centerX;
+        m_offsetX = 0;
+    }
+    if (displayHeight <= height()) {
+        finalY = centerY;
+        m_offsetY = 0;
+    }
+
+    // 设置显示窗口的位置和大小
+    m_displayWnd->setGeometry(finalX, finalY, displayWidth, displayHeight);
+}
+
+void CameraWgt::mousePressEvent(QMouseEvent *event) {
+    if (event->button() == Qt::LeftButton) {
+        // 只有点击在视频区域内才允许拖动
+        if (m_displayWnd && m_displayWnd->geometry().contains(event->pos())) {
+            m_isPanning = true;
+            m_lastMousePos = event->pos();
+            setCursor(Qt::ClosedHandCursor);
+        }
+    } else if (event->button() == Qt::RightButton) {
+        // 右键重置缩放和位置
+        m_scaleFactor = 1.0f;
+        m_offsetX = 0;
+        m_offsetY = 0;
+        updateDisplayGeometry();
+    }
+}
+
+void CameraWgt::mouseMoveEvent(QMouseEvent *event) {
+    if (m_isPanning) {
+        QPoint delta = event->pos() - m_lastMousePos;
+        m_offsetX += delta.x();
+        m_offsetY += delta.y();
+        m_lastMousePos = event->pos();
+        updateDisplayGeometry();
+    }
+}
+
+void CameraWgt::mouseReleaseEvent(QMouseEvent *event) {
+    if (event->button() == Qt::LeftButton) {
+        m_isPanning = false;
+        setCursor(Qt::ArrowCursor); // 恢复光标
+    }
 }

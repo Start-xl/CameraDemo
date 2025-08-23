@@ -25,17 +25,13 @@ private:
 private slots:
     void onTimerStreamStatistic();
 
-    void on_deviceModel_CBox_currentIndexChanged(int index);
-
-    void on_openDevice_Btn_clicked();
-
-    void on_closeDevice_Btn_clicked();
-
     void on_startGrab_Btn_clicked();
 
     void on_stopGrab_Btn_clicked();
 
     void closeEvent(QCloseEvent *event);
+
+    void on_deviceModel_Tree_doubleClicked(const QModelIndex &index);
 
 private:
     Ui::MainWindow *ui;

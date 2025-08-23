@@ -1,5 +1,6 @@
 #include "MainWindow.h"
 #include "./ui_MainWindow.h"
+#include <QStandardItemModel>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -28,77 +29,49 @@ void MainWindow::initUi() {
         return;
     }
     if (m_deviceInfoList.nDevNum < 1) {
-        ui->deviceModel_CBox->setEnabled(false);
-        ui->openDevice_Btn->setEnabled(false);
+        // ui->deviceModel_CBox->setEnabled(false);
+        // ui->openDevice_Btn->setEnabled(false);
     } else {
-        ui->deviceModel_CBox->setEnabled(true);
-        ui->openDevice_Btn->setEnabled(true);
+        // ui->deviceModel_CBox->setEnabled(true);
+        // ui->openDevice_Btn->setEnabled(true);
+
+        // 初始化 model
+        QStandardItemModel* model = new QStandardItemModel();
+        // TreeView控件载入 model
+        ui->deviceModel_Tree->setModel(model);
+        ui->deviceModel_Tree->setHeaderHidden(true); // 隐藏表头
+        ui->deviceModel_Tree->setEditTriggers(QAbstractItemView::NoEditTriggers); // 设置节点内容不可编辑
 
         for (unsigned int i = 0; i < m_deviceInfoList.nDevNum; i++) {
             deviceName = m_deviceInfoList.pDevInfo[i].cameraName;
             deviceIP = m_deviceInfoList.pDevInfo[i].DeviceSpecificInfo.gigeDeviceInfo.ipAddress;
-            ui->deviceModel_CBox->addItem(deviceName + " (" + deviceIP + ")");
+            QStandardItem* rootItem = new QStandardItem(deviceName + " (" + deviceIP + ")");
+            model->appendRow(rootItem);
         }
 
         ui->cameraWgt->SetCamera(m_deviceInfoList.pDevInfo[0].cameraKey);
     }
-
-    ui->closeDevice_Btn->setEnabled(false);
-    ui->startGrab_Btn->setEnabled(false);
-    ui->stopGrab_Btn->setEnabled(false);
 }
 
 /**
  * @author xl-1/4
  * @version 1.0
- * @brief TODO 设置要连接的相机
- * @date 2025-08-10
+ * @brief TODO 双击连接相机
+ * @date 2025-08-23
  */
-void MainWindow::on_deviceModel_CBox_currentIndexChanged(int index) {
-    ui->cameraWgt->SetCamera(m_deviceInfoList.pDevInfo[index].cameraKey);
-}
+void MainWindow::on_deviceModel_Tree_doubleClicked(const QModelIndex &index) {
+    // 设置要连接的相机
+    ui->cameraWgt->SetCamera(m_deviceInfoList.pDevInfo[index.row()].cameraKey);
 
-/**
- * @author xl-1/4
- * @version 1.0
- * @brief TODO 连接
- * @date 2025-08-10
- */
-void MainWindow::on_openDevice_Btn_clicked() {
     if (!ui->cameraWgt->CameraOpen()) {
         return;
     }
-
-    ui->openDevice_Btn->setEnabled(false);
-    ui->closeDevice_Btn->setEnabled(true);
-    ui->startGrab_Btn->setEnabled(true);
-    ui->stopGrab_Btn->setEnabled(false);
-    ui->deviceModel_CBox->setEnabled(false);
 
     // 连接相机之后显示统计信息，所有值为0
     // Show statistics after connecting camera, all values are 0
     ui->cameraWgt->resetStatistic();
     QString strStatic = ui->cameraWgt->getStatistic();
     ui->statistic_Lab->setText(strStatic);
-}
-
-/**
- * @author xl-1/4
- * @version 1.0
- * @brief TODO 断开连接
- * @date 2025-08-10
- */
-void MainWindow::on_closeDevice_Btn_clicked() {
-    on_stopGrab_Btn_clicked();
-    ui->cameraWgt->CameraClose();
-
-    ui->statistic_Lab->setText("");// 断开相机以后不显示状态栏 | Do not display the status bar after disconnecting the camera
-
-    ui->openDevice_Btn->setEnabled(true);
-    ui->closeDevice_Btn->setEnabled(false);
-    ui->startGrab_Btn->setEnabled(false);
-    ui->stopGrab_Btn->setEnabled(false);
-    ui->deviceModel_CBox->setEnabled(true);
 }
 
 /**

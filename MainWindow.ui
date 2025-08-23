@@ -17,151 +17,150 @@
    <iconset resource="resource.qrc">
     <normaloff>:/ico/icon.png</normaloff>:/ico/icon.png</iconset>
   </property>
+  <property name="styleSheet">
+   <string notr="true"/>
+  </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QVBoxLayout" name="verticalLayout" stretch="0,1,0">
+   <layout class="QVBoxLayout" name="verticalLayout_5">
     <item>
-     <layout class="QHBoxLayout" name="horizontalLayout">
+     <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="1,3">
+      <property name="spacing">
+       <number>20</number>
+      </property>
       <item>
-       <widget class="QLabel" name="deviceModel_Lab">
-        <property name="minimumSize">
-         <size>
-          <width>0</width>
-          <height>36</height>
-         </size>
+       <layout class="QVBoxLayout" name="verticalLayout_4" stretch="1,1">
+        <property name="spacing">
+         <number>10</number>
         </property>
-        <property name="font">
-         <font>
-          <pointsize>10</pointsize>
-         </font>
-        </property>
-        <property name="text">
-         <string>设备型号：</string>
-        </property>
-       </widget>
+        <item>
+         <widget class="QGroupBox" name="groupBox_2">
+          <property name="title">
+           <string>设备列表</string>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_2">
+           <item>
+            <widget class="QTreeView" name="deviceModel_Tree"/>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QGroupBox" name="groupBox">
+          <property name="title">
+           <string>设备信息</string>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout">
+           <item>
+            <widget class="QTableWidget" name="deviceInfo_Wgt">
+             <row>
+              <property name="text">
+               <string>物理地址</string>
+              </property>
+             </row>
+             <row>
+              <property name="text">
+               <string>IP地址</string>
+              </property>
+             </row>
+             <row>
+              <property name="text">
+               <string>子网掩码</string>
+              </property>
+             </row>
+             <row>
+              <property name="text">
+               <string>网关</string>
+              </property>
+             </row>
+             <row>
+              <property name="text">
+               <string>设备版本</string>
+              </property>
+             </row>
+             <row>
+              <property name="text">
+               <string>协议版本</string>
+              </property>
+             </row>
+             <row>
+              <property name="text">
+               <string>连接状态</string>
+              </property>
+             </row>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+       </layout>
       </item>
       <item>
-       <widget class="QComboBox" name="deviceModel_CBox">
-        <property name="minimumSize">
-         <size>
-          <width>400</width>
-          <height>36</height>
-         </size>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <spacer name="horizontalSpacer">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>98</width>
-          <height>33</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item>
-       <widget class="QPushButton" name="openDevice_Btn">
-        <property name="minimumSize">
-         <size>
-          <width>0</width>
-          <height>36</height>
-         </size>
-        </property>
-        <property name="text">
-         <string>打开设备</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="closeDevice_Btn">
-        <property name="minimumSize">
-         <size>
-          <width>0</width>
-          <height>36</height>
-         </size>
-        </property>
-        <property name="text">
-         <string>关闭设备</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <spacer name="horizontalSpacer_2">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>48</width>
-          <height>33</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item>
-       <widget class="QPushButton" name="startGrab_Btn">
-        <property name="minimumSize">
-         <size>
-          <width>0</width>
-          <height>36</height>
-         </size>
-        </property>
-        <property name="text">
-         <string>开始采集</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="stopGrab_Btn">
-        <property name="minimumSize">
-         <size>
-          <width>0</width>
-          <height>36</height>
-         </size>
-        </property>
-        <property name="text">
-         <string>停止采集</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <spacer name="horizontalSpacer_3">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>18</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
+       <layout class="QVBoxLayout" name="verticalLayout_3" stretch="1,0,0">
+        <item>
+         <widget class="CameraWgt" name="cameraWgt" native="true">
+          <property name="styleSheet">
+           <string notr="true"/>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout">
+          <item>
+           <widget class="QPushButton" name="startGrab_Btn">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>36</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>开始采集</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="stopGrab_Btn">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>36</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>停止采集</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="QLabel" name="statistic_Lab">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>25</height>
+           </size>
+          </property>
+          <property name="font">
+           <font>
+            <pointsize>-1</pointsize>
+           </font>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QLabel {
+    color: #ffa02f;
+    font-size: 18px;
+    padding: 2px;
+}</string>
+          </property>
+          <property name="text">
+           <string>Statistics</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </item>
      </layout>
-    </item>
-    <item>
-     <widget class="CameraWgt" name="cameraWgt" native="true"/>
-    </item>
-    <item>
-     <widget class="QLabel" name="statistic_Lab">
-      <property name="minimumSize">
-       <size>
-        <width>0</width>
-        <height>36</height>
-       </size>
-      </property>
-      <property name="font">
-       <font>
-        <pointsize>10</pointsize>
-       </font>
-      </property>
-      <property name="text">
-       <string>Statistics</string>
-      </property>
-     </widget>
     </item>
    </layout>
   </widget>

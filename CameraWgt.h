@@ -10,6 +10,7 @@
 #include <QElapsedTimer>
 #include <QMutex>
 #include <QThread>
+#include <QWheelEvent>
 
 // 状态栏统计信息
 // Status bar statistics
@@ -111,10 +112,14 @@ public:
     void updateStatistic();
 
     void display();
-
 protected:
-    void resizeEvent(QResizeEvent *event) override;
+    void resizeEvent(QResizeEvent* event) override;
+    void wheelEvent(QWheelEvent* event) override;
+    void mousePressEvent(QMouseEvent* event) override;
+    void mouseMoveEvent(QMouseEvent* event) override;
+    void mouseReleaseEvent(QMouseEvent* event) override;
 
+    void updateDisplayGeometry();
 private:
 
     // 设置显示频率，默认一秒钟显示30帧
@@ -137,7 +142,6 @@ private:
     // VedioRender relative function
     bool openRender(int width, int height);
     bool closeRender();
-
 public:
     TMessageQue<CFrameInfo>				m_qDisplayFrameQueue;		// 显示队列      | diaplay queue
 
@@ -146,7 +150,6 @@ private:
     QWidget *m_displayWnd;
     int m_videoWidth;   // 收到的帧宽（原始分辨率）
     int m_videoHeight;  // 收到的帧高
-
 
     Ui::CameraWgt *ui;
 
@@ -176,6 +179,12 @@ private:
 
     bool			m_isExitDisplayThread;
     HANDLE			m_threadHandle;
+
+    float m_scaleFactor;
+    int m_offsetX;            // 平移偏移
+    int m_offsetY;
+    QPoint m_lastMousePos;        // 上一次鼠标位置
+    bool m_isPanning;     // 是否正在拖动
 };
 
 #endif // CAMERAWGT_H
