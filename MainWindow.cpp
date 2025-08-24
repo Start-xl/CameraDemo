@@ -1,6 +1,7 @@
 #include "MainWindow.h"
 #include "./ui_MainWindow.h"
 #include <QStandardItemModel>
+#include <QDebug>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -32,9 +33,6 @@ void MainWindow::initUi() {
         // ui->deviceModel_CBox->setEnabled(false);
         // ui->openDevice_Btn->setEnabled(false);
     } else {
-        // ui->deviceModel_CBox->setEnabled(true);
-        // ui->openDevice_Btn->setEnabled(true);
-
         // 初始化 model
         QStandardItemModel* model = new QStandardItemModel();
         // TreeView控件载入 model
@@ -51,8 +49,45 @@ void MainWindow::initUi() {
 
         ui->cameraWgt->SetCamera(m_deviceInfoList.pDevInfo[0].cameraKey);
     }
+    ui->startGrab_Btn->setEnabled(false);
+    ui->stopGrab_Btn->setEnabled(false);
+    ui->closeDevice_Btn->setEnabled(false);
+    ui->saveImage_Btn->setEnabled(false);
+    ui->videRecord_Btn->setEnabled(false);
+    ui->flipHorizontal_Btn->setEnabled(false);
+    ui->flipVertical_Btn->setEnabled(false);
 }
 
+/**
+ * @author xl-1/4
+ * @version 1.0
+ * @brief TODO 双击连接相机之后，显示设备信息
+ * @date 2025-08-24
+ */
+void MainWindow::displayDeviceInfo(const QModelIndex &index) {
+    ui->deviceInfo_Wgt->verticalHeader()->setVisible(true);
+    ui->deviceInfo_Wgt->verticalHeader()->setFixedWidth(ui->deviceInfo_Wgt->width() * 0.4);
+
+    ui->deviceInfo_Wgt->horizontalHeader()->setVisible(false); // 设置水平表头不可见
+    ui->deviceInfo_Wgt->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+
+    // 获取相关设备信息
+    deviceMacAddress = m_deviceInfoList.pDevInfo[index.row()].DeviceSpecificInfo.gigeDeviceInfo.macAddress;
+    deviceIP = m_deviceInfoList.pDevInfo[index.row()].DeviceSpecificInfo.gigeDeviceInfo.ipAddress;
+    deviceSubnetMask = m_deviceInfoList.pDevInfo[index.row()].DeviceSpecificInfo.gigeDeviceInfo.subnetMask;
+    deviceGateway = m_deviceInfoList.pDevInfo[index.row()].DeviceSpecificInfo.gigeDeviceInfo.defaultGateWay;
+    deviceVersion = m_deviceInfoList.pDevInfo[index.row()].deviceVersion;
+    serialNum = m_deviceInfoList.pDevInfo[index.row()].serialNumber;
+    protocolVersion = m_deviceInfoList.pDevInfo[index.row()].DeviceSpecificInfo.gigeDeviceInfo.protocolVersion;
+
+    ui->deviceInfo_Wgt->setItem(0, 0, new QTableWidgetItem(deviceMacAddress));
+    ui->deviceInfo_Wgt->setItem(1, 0, new QTableWidgetItem(deviceIP));
+    ui->deviceInfo_Wgt->setItem(2, 0, new QTableWidgetItem(deviceSubnetMask));
+    ui->deviceInfo_Wgt->setItem(3, 0, new QTableWidgetItem(deviceGateway));
+    ui->deviceInfo_Wgt->setItem(4, 0, new QTableWidgetItem(deviceVersion));
+    ui->deviceInfo_Wgt->setItem(5, 0, new QTableWidgetItem(serialNum));
+    ui->deviceInfo_Wgt->setItem(6, 0, new QTableWidgetItem(protocolVersion));
+}
 /**
  * @author xl-1/4
  * @version 1.0
@@ -60,6 +95,9 @@ void MainWindow::initUi() {
  * @date 2025-08-23
  */
 void MainWindow::on_deviceModel_Tree_doubleClicked(const QModelIndex &index) {
+    ui->startGrab_Btn->setEnabled(true);
+    ui->closeDevice_Btn->setEnabled(true);
+
     // 设置要连接的相机
     ui->cameraWgt->SetCamera(m_deviceInfoList.pDevInfo[index.row()].cameraKey);
 
@@ -72,6 +110,8 @@ void MainWindow::on_deviceModel_Tree_doubleClicked(const QModelIndex &index) {
     ui->cameraWgt->resetStatistic();
     QString strStatic = ui->cameraWgt->getStatistic();
     ui->statistic_Lab->setText(strStatic);
+
+    displayDeviceInfo(index); // 显示设备信息
 }
 
 /**
@@ -89,6 +129,10 @@ void MainWindow::on_startGrab_Btn_clicked() {
 
     ui->startGrab_Btn->setEnabled(false);
     ui->stopGrab_Btn->setEnabled(true);
+    ui->saveImage_Btn->setEnabled(true);
+    ui->videRecord_Btn->setEnabled(true);
+    ui->flipHorizontal_Btn->setEnabled(true);
+    ui->flipVertical_Btn->setEnabled(true);
 
     ui->cameraWgt->resetStatistic();
     m_staticTimer.start(100);
@@ -107,6 +151,9 @@ void MainWindow::on_stopGrab_Btn_clicked() {
 
     ui->startGrab_Btn->setEnabled(true);
     ui->stopGrab_Btn->setEnabled(false);
+    ui->videRecord_Btn->setEnabled(false);
+    ui->flipHorizontal_Btn->setEnabled(false);
+    ui->flipVertical_Btn->setEnabled(false);
 }
 
 void MainWindow::onTimerStreamStatistic() {
@@ -118,3 +165,22 @@ void MainWindow::closeEvent(QCloseEvent * event) {
     on_stopGrab_Btn_clicked();
     ui->cameraWgt->CameraClose();
 }
+
+/**
+ * @author xl-1/4
+ * @version 1.0
+ * @brief TODO 关闭设备
+ * @date 2025-08-24
+ */
+void MainWindow::on_closeDevice_Btn_clicked() {
+    on_stopGrab_Btn_clicked();
+
+    ui->cameraWgt->CameraClose();
+    ui->statistic_Lab->setText("");
+
+    ui->closeDevice_Btn->setEnabled(false);
+    ui->startGrab_Btn->setEnabled(false);
+    ui->stopGrab_Btn->setEnabled(false);
+    ui->saveImage_Btn->setEnabled(false);
+}
+

@@ -96,7 +96,8 @@ CameraWgt::CameraWgt(QWidget *parent)
     // 创建一个 native 子窗口，让 VideoRender 渲染到这个子窗口
     m_displayWnd = new QWidget(this);
     m_displayWnd->setAttribute(Qt::WA_NativeWindow);      // 确保有原生窗口句柄
-    m_displayWnd->show();
+    m_displayWnd->setVisible(false);
+    // m_displayWnd->show();
 
     // 使用子窗口 winId作为 VideoRender的目标窗口
     m_hWnd = (VR_HWND)m_displayWnd->winId();
@@ -242,8 +243,8 @@ bool CameraWgt::CameraClose(void)
 
 // 开始采集
 // start grabbing
-bool CameraWgt::CameraStart()
-{
+bool CameraWgt::CameraStart() {
+    m_displayWnd->setVisible(true);
     int ret = IMV_OK;
 
     if (IMV_IsGrabbing(m_devHandle))
@@ -692,6 +693,7 @@ void CameraWgt::updateStatistic()
                          .arg(strSpeed);
     m_bNeedUpdate = false;
 }
+
 void CameraWgt::recvNewFrame(quint32 frameSize)
 {
     QMutexLocker locker(&m_mxStatistic);

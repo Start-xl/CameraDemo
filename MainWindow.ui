@@ -52,6 +52,12 @@
           <layout class="QVBoxLayout" name="verticalLayout">
            <item>
             <widget class="QTableWidget" name="deviceInfo_Wgt">
+             <attribute name="horizontalHeaderVisible">
+              <bool>false</bool>
+             </attribute>
+             <attribute name="verticalHeaderVisible">
+              <bool>false</bool>
+             </attribute>
              <row>
               <property name="text">
                <string>物理地址</string>
@@ -79,14 +85,19 @@
              </row>
              <row>
               <property name="text">
-               <string>协议版本</string>
+               <string>序列号</string>
               </property>
              </row>
              <row>
               <property name="text">
-               <string>连接状态</string>
+               <string>协议版本</string>
               </property>
              </row>
+             <column>
+              <property name="text">
+               <string>设备相关信息</string>
+              </property>
+             </column>
             </widget>
            </item>
           </layout>
@@ -105,6 +116,9 @@
         </item>
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout">
+          <property name="spacing">
+           <number>50</number>
+          </property>
           <item>
            <widget class="QPushButton" name="startGrab_Btn">
             <property name="minimumSize">
@@ -128,6 +142,71 @@
             </property>
             <property name="text">
              <string>停止采集</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="closeDevice_Btn">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>36</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>关闭设备</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="saveImage_Btn">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>36</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>保存图像</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="videRecord_Btn">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>36</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>视频录像</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="flipHorizontal_Btn">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>36</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>水平翻转</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="flipVertical_Btn">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>36</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>垂直翻转</string>
             </property>
            </widget>
           </item>

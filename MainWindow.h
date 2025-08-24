@@ -22,6 +22,8 @@ public:
 private:
     void initUi();
 
+    void displayDeviceInfo(const QModelIndex &index);
+
 private slots:
     void onTimerStreamStatistic();
 
@@ -33,6 +35,8 @@ private slots:
 
     void on_deviceModel_Tree_doubleClicked(const QModelIndex &index);
 
+    void on_closeDevice_Btn_clicked();
+
 private:
     Ui::MainWindow *ui;
 
@@ -40,5 +44,12 @@ private:
     QTimer m_staticTimer;				// 定时器，定时刷新状态栏信息 | Timer, refresh status bar information regularly
     QString deviceName;
     QString deviceIP;
+
+    QString deviceMacAddress;           // 物理地址
+    QString deviceSubnetMask;           // 子网掩码
+    QString deviceGateway;              // 网关
+    QString deviceVersion;              // 设备版本
+    QString serialNum;                  // 序列号
+    QString protocolVersion;            // 协议版本
 };
 #endif // MAINWINDOW_H
