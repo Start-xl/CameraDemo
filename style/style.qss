@@ -1,6 +1,6 @@
-QToolTip
-{
+QToolTip {
      border: 1px solid black;
+     color: black;
      background-color: #ffa02f;
      padding: 1px;
      border-radius: 3px;
@@ -199,7 +199,7 @@ QComboBox QAbstractItemView::item:disabled
 }
 
 QGroupBox {
-    border: 1px solid #444;
+    border: 2px solid #444;
     border-radius: 6px;
     margin-top: 12px; /* 标题和内容区的间隔 */
     background-color: #323232;
@@ -215,6 +215,7 @@ QGroupBox::title {
     margin-top: 0px; /* 负值让标题更靠上，覆盖在边框上 */
     background-color: #323232; /* 与GroupBox背景一致 */
     color: #ffa02f; /* 使用主题橙色突出标题 */
+    font-weight: bold;
 }
 
 QGroupBox:focus {
@@ -725,5 +726,226 @@ QTableWidget:focus {
 
 /* 空表格背景 */
 QTableWidget:empty {
+    background-color: #323232;
+}
+
+QSlider::groove:horizontal {
+    border: 1px solid #1e1e1e;
+    height: 6px; /* 保持原始粗细 */
+    background: #444;
+    margin: 0px;
+    border-radius: 3px;
+}
+
+QSlider::sub-page:horizontal {
+    background: QLinearGradient(x1:0, y1:0, x2:1, y2:0,
+                                stop:0 #ffa02f, stop:1 #d7801a);
+    border: 1px solid #1e1e1e;
+    height: 6px;
+    border-radius: 3px;
+}
+
+QSlider::add-page:horizontal {
+    background: #2a2a2a;
+    border: 1px solid #1e1e1e;
+    height: 6px;
+    border-radius: 3px;
+}
+
+QSlider::handle:horizontal {
+    background: #ffa02f;
+    border: 1px solid #1e1e1e;
+    width: 14px;
+    margin: -5px 0; /* 保持垂直居中 */
+    border-radius: 7px;
+}
+
+QSlider::handle:horizontal:hover {
+    background: #d7801a;
+    border: 1px solid #ffaa00;
+}
+
+QDoubleSpinBox {
+    background-color: #323232;
+    border: 1px solid #1e1e1e;
+    border-radius: 2px;
+    padding: 2px 5px;
+    color: #b1b1b1;
+    font-size: 15px;
+}
+
+QDoubleSpinBox:hover {
+    border: 1px solid #ffa02f;
+}
+
+QDoubleSpinBox:disabled {
+    color: #888888;
+    background-color: #383838;
+    border: 1px solid #333333;
+}
+
+QSpinBox {
+    background-color: #323232;
+    border: 1px solid #1e1e1e;
+    border-radius: 2px;
+    padding: 2px 5px;
+    color: #b1b1b1;
+    font-size: 15px;
+}
+
+QSpinBox:hover {
+    border: 1px solid #ffa02f;
+}
+
+QSpinBox:disabled {
+    color: #888888;
+    background-color: #383838;
+    border: 1px solid #333333;
+}
+
+QTableView {
+    background-color: #323232;  /* 与主背景一致 */
+    border: none;  /* 移除外边框 */
+    outline: none;
+    color: #b1b1b1;
+    font-size: 15px;
+    show-decoration-selected: 0;  /* 移除选中装饰 */
+    alternate-background-color: transparent;
+}
+
+/* 确保整个表格区域背景正确 */
+QTableView QAbstractScrollArea {
+    background-color: #323232;
+}
+
+/* 视口背景 - 显示内容的区域 */
+QTableView QWidget {
+    background-color: #323232;
+}
+
+/* 表格项样式 - 保留网格线相关设置 */
+QTableView::item {
+    padding: 6px 8px;
+    border: 1px solid #4a4a4a;  /* 网格线颜色 */
+    background-color: transparent;  /* 透明背景 */
+}
+
+/* 悬停效果 - 轻微高亮 */
+QTableView::item:hover {
+    background-color: rgba(255, 170, 0, 0.1);  /* 轻微的橙色背景 */
+    color: #ffffff;
+}
+
+/* 选中效果 */
+QTableView::item:selected {
+    background-color: rgba(255, 160, 47, 0.3);  /* 半透明橙色 */
+    color: #ffa02f;
+    border: 1px solid rgba(255, 160, 47, 0.5);  /* 选中项网格线高亮 */
+}
+
+/* 焦点效果 */
+QTableView::item:focus {
+    background-color: rgba(255, 170, 0, 0.2);
+    outline: none;
+}
+
+/* 表头样式 */
+QHeaderView {
+    background-color: #323232;
+}
+
+QHeaderView::section {
+    background-color: #323232;  /* 与主背景一致 */
+    color: #b1b1b1;
+    padding: 8px 4px;
+    border: 1px solid #4a4a4a;  /* 表头网格线 */
+    font-weight: bold;
+    font-size: 15px;
+}
+
+QHeaderView::section:hover {
+    color: #ffa02f;
+    background-color: rgba(255, 170, 0, 0.1);
+}
+
+/* 角落部件 */
+QTableCornerButton::section {
+    background-color: #323232;
+    border: 1px solid #4a4a4a;  /* 角落网格线 */
+}
+
+/* 垂直滚动条 */
+QTableView QScrollBar:vertical {
+    background: #323232;  /* 与主背景一致 */
+    width: 8px;
+    margin: 0;
+    border: none;
+}
+
+QTableView QScrollBar::handle:vertical {
+    background: rgba(255, 160, 47, 0.5);  /* 半透明橙色 */
+    min-height: 20px;
+    border-radius: 4px;
+}
+
+QTableView QScrollBar::handle:vertical:hover {
+    background: rgba(255, 160, 47, 0.8);
+}
+
+/* 水平滚动条 */
+QTableView QScrollBar:horizontal {
+    background: #323232;
+    height: 8px;
+    margin: 0;
+    border: none;
+}
+
+QTableView QScrollBar::handle:horizontal {
+    background: rgba(255, 160, 47, 0.5);
+    min-width: 20px;
+    border-radius: 4px;
+}
+
+QTableView QScrollBar::handle:horizontal:hover {
+    background: rgba(255, 160, 47, 0.8);
+}
+
+/* 滚动条按钮和页面区域 */
+QTableView QScrollBar::add-line:vertical,
+QTableView QScrollBar::sub-line:vertical,
+QTableView QScrollBar::add-line:horizontal,
+QTableView QScrollBar::sub-line:horizontal {
+    height: 0px;
+    width: 0px;
+    background: #323232;
+    border: none;
+}
+
+QTableView QScrollBar::add-page:vertical,
+QTableView QScrollBar::sub-page:vertical,
+QTableView QScrollBar::add-page:horizontal,
+QTableView QScrollBar::sub-page:horizontal {
+    background: #323232;
+}
+
+/* 禁用状态 */
+QTableView:disabled {
+    color: #404040;
+    background-color: #323232;
+}
+
+QTableView::item:disabled {
+    color: #404040;
+    background-color: transparent;
+    border: 1px solid #4a4a4a;  /* 禁用状态仍保留网格线 */
+}
+
+/* 确保焦点框不显示 */
+QTableView:focus {
+    outline: none;
+}
+
+/* 空表格背景 */
+QTableView:empty {
     background-color: #323232;
 }

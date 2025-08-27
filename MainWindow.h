@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QTimer>
 #include "IMVAPI/IMVApi.h"
+#include "ImageStatisticWgt.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -37,6 +38,8 @@ private slots:
 
     void on_closeDevice_Btn_clicked();
 
+    void on_imageStatistic_Btn_clicked();
+
 private:
     Ui::MainWindow *ui;
 
@@ -51,5 +54,7 @@ private:
     QString deviceVersion;              // 设备版本
     QString serialNum;                  // 序列号
     QString protocolVersion;            // 协议版本
+
+    ImageStatisticWgt* imageStatistic;
 };
 #endif // MAINWINDOW_H

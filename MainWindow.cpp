@@ -53,9 +53,10 @@ void MainWindow::initUi() {
     ui->stopGrab_Btn->setEnabled(false);
     ui->closeDevice_Btn->setEnabled(false);
     ui->saveImage_Btn->setEnabled(false);
-    ui->videRecord_Btn->setEnabled(false);
+    ui->imageStatistic_Btn->setEnabled(false);
     ui->flipHorizontal_Btn->setEnabled(false);
     ui->flipVertical_Btn->setEnabled(false);
+    ui->deviceProperties_Wgt->setVisible(false);
 }
 
 /**
@@ -66,10 +67,12 @@ void MainWindow::initUi() {
  */
 void MainWindow::displayDeviceInfo(const QModelIndex &index) {
     ui->deviceInfo_Wgt->verticalHeader()->setVisible(true);
-    ui->deviceInfo_Wgt->verticalHeader()->setFixedWidth(ui->deviceInfo_Wgt->width() * 0.4);
+    ui->deviceInfo_Wgt->verticalHeader()->setFixedWidth(180);
 
     ui->deviceInfo_Wgt->horizontalHeader()->setVisible(false); // 设置水平表头不可见
     ui->deviceInfo_Wgt->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+
+    ui->deviceInfo_Wgt->setEditTriggers(QAbstractItemView::NoEditTriggers); // 设置整个表格为只读
 
     // 获取相关设备信息
     deviceMacAddress = m_deviceInfoList.pDevInfo[index.row()].DeviceSpecificInfo.gigeDeviceInfo.macAddress;
@@ -80,14 +83,29 @@ void MainWindow::displayDeviceInfo(const QModelIndex &index) {
     serialNum = m_deviceInfoList.pDevInfo[index.row()].serialNumber;
     protocolVersion = m_deviceInfoList.pDevInfo[index.row()].DeviceSpecificInfo.gigeDeviceInfo.protocolVersion;
 
-    ui->deviceInfo_Wgt->setItem(0, 0, new QTableWidgetItem(deviceMacAddress));
-    ui->deviceInfo_Wgt->setItem(1, 0, new QTableWidgetItem(deviceIP));
-    ui->deviceInfo_Wgt->setItem(2, 0, new QTableWidgetItem(deviceSubnetMask));
-    ui->deviceInfo_Wgt->setItem(3, 0, new QTableWidgetItem(deviceGateway));
-    ui->deviceInfo_Wgt->setItem(4, 0, new QTableWidgetItem(deviceVersion));
-    ui->deviceInfo_Wgt->setItem(5, 0, new QTableWidgetItem(serialNum));
-    ui->deviceInfo_Wgt->setItem(6, 0, new QTableWidgetItem(protocolVersion));
+    QTableWidgetItem* deviceMacAddressItem = new QTableWidgetItem(deviceMacAddress);
+    ui->deviceInfo_Wgt->setItem(0, 0, deviceMacAddressItem);
+    deviceMacAddressItem->setToolTip(deviceMacAddress);
+    QTableWidgetItem* deviceIPItem = new QTableWidgetItem(deviceIP);
+    ui->deviceInfo_Wgt->setItem(1, 0, deviceIPItem);
+    deviceIPItem->setToolTip(deviceIP);
+    QTableWidgetItem* deviceSubnetMaskItem = new QTableWidgetItem(deviceSubnetMask);
+    ui->deviceInfo_Wgt->setItem(2, 0, deviceSubnetMaskItem);
+    deviceSubnetMaskItem->setToolTip(deviceSubnetMask);
+    QTableWidgetItem* deviceGatewayItem = new QTableWidgetItem(deviceGateway);
+    ui->deviceInfo_Wgt->setItem(3, 0, deviceGatewayItem);
+    deviceGatewayItem->setToolTip(deviceGateway);
+    QTableWidgetItem* deviceVersionItem = new QTableWidgetItem(deviceVersion);
+    ui->deviceInfo_Wgt->setItem(4, 0, deviceVersionItem);
+    deviceVersionItem->setToolTip(deviceVersion);
+    QTableWidgetItem* serialNumItem = new QTableWidgetItem(serialNum);
+    ui->deviceInfo_Wgt->setItem(5, 0, serialNumItem);
+    serialNumItem->setToolTip(serialNum);
+    QTableWidgetItem* protocolVersionItem = new QTableWidgetItem(protocolVersion);
+    ui->deviceInfo_Wgt->setItem(6, 0, protocolVersionItem);
+    protocolVersionItem->setToolTip(protocolVersion);
 }
+
 /**
  * @author xl-1/4
  * @version 1.0
@@ -95,15 +113,16 @@ void MainWindow::displayDeviceInfo(const QModelIndex &index) {
  * @date 2025-08-23
  */
 void MainWindow::on_deviceModel_Tree_doubleClicked(const QModelIndex &index) {
-    ui->startGrab_Btn->setEnabled(true);
-    ui->closeDevice_Btn->setEnabled(true);
-
     // 设置要连接的相机
     ui->cameraWgt->SetCamera(m_deviceInfoList.pDevInfo[index.row()].cameraKey);
 
     if (!ui->cameraWgt->CameraOpen()) {
         return;
     }
+
+    ui->startGrab_Btn->setEnabled(true);
+    ui->closeDevice_Btn->setEnabled(true);
+    ui->deviceProperties_Wgt->setVisible(true);
 
     // 连接相机之后显示统计信息，所有值为0
     // Show statistics after connecting camera, all values are 0
@@ -130,7 +149,7 @@ void MainWindow::on_startGrab_Btn_clicked() {
     ui->startGrab_Btn->setEnabled(false);
     ui->stopGrab_Btn->setEnabled(true);
     ui->saveImage_Btn->setEnabled(true);
-    ui->videRecord_Btn->setEnabled(true);
+    ui->imageStatistic_Btn->setEnabled(true);
     ui->flipHorizontal_Btn->setEnabled(true);
     ui->flipVertical_Btn->setEnabled(true);
 
@@ -151,7 +170,6 @@ void MainWindow::on_stopGrab_Btn_clicked() {
 
     ui->startGrab_Btn->setEnabled(true);
     ui->stopGrab_Btn->setEnabled(false);
-    ui->videRecord_Btn->setEnabled(false);
     ui->flipHorizontal_Btn->setEnabled(false);
     ui->flipVertical_Btn->setEnabled(false);
 }
@@ -182,5 +200,18 @@ void MainWindow::on_closeDevice_Btn_clicked() {
     ui->startGrab_Btn->setEnabled(false);
     ui->stopGrab_Btn->setEnabled(false);
     ui->saveImage_Btn->setEnabled(false);
+    ui->imageStatistic_Btn->setEnabled(false);
+    ui->deviceProperties_Wgt->setVisible(false);
+}
+
+/**
+ * @author xl-1/4
+ * @version 1.0
+ * @brief TODO 打开图像统计界面
+ * @date 2025-08-27
+ */
+void MainWindow::on_imageStatistic_Btn_clicked() {
+    imageStatistic = new ImageStatisticWgt(this);
+    imageStatistic->show();
 }
 

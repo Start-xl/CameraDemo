@@ -120,8 +120,8 @@ protected:
     void mouseReleaseEvent(QMouseEvent* event) override;
 
     void updateDisplayGeometry();
-private:
 
+private:
     // 设置显示频率，默认一秒钟显示30帧
     // Set the display frequency to display 30 frames in one second by default
     void setDisplayFPS(int nFPS);
@@ -142,14 +142,20 @@ private:
     // VedioRender relative function
     bool openRender(int width, int height);
     bool closeRender();
+
+    void redrawLastFrame();
 public:
     TMessageQue<CFrameInfo>				m_qDisplayFrameQueue;		// 显示队列      | diaplay queue
 
 private:
     // 新增：用于承载 VideoRender 的 native子窗口（按比例改变它的大小）
-    QWidget *m_displayWnd;
+    QWidget* m_displayWnd;
     int m_videoWidth;   // 收到的帧宽（原始分辨率）
     int m_videoHeight;  // 收到的帧高
+
+    CFrameInfo m_lastFrame;     // 保存最后一帧数据
+    bool m_hasLastFrame;        // 标记是否有最后一帧
+    QMutex m_mxLastFrame;       // 保护最后一帧数据
 
     Ui::CameraWgt *ui;
 

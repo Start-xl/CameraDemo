@@ -53,6 +53,7 @@ else()
             ${PROJECT_SOURCES}
             resource.qrc
             CameraWgt.h CameraWgt.cpp CameraWgt.ui
+            ImageStatisticWgt.h ImageStatisticWgt.cpp ImageStatisticWgt.ui
         )
     endif()
 endif()

@@ -5,7 +5,7 @@
 #include <QTimer>
 #include <QtGlobal>
 
-#define DEFAULT_SHOW_RATE (30) // 默认显示帧率 | defult display frequency
+#define DEFAULT_SHOW_RATE (20) // 默认显示帧率 | defult display frequency
 #define DEFAULT_ERROR_STRING ("N/A")
 #define MAX_FRAME_STAT_NUM (50)
 #define MIN_LEFT_LIST_NUM (2)
@@ -90,12 +90,17 @@ CameraWgt::CameraWgt(QWidget *parent)
     , m_offsetX(0)
     , m_offsetY(0)
     , m_isPanning(false)
+    , m_hasLastFrame(false)
 {
     ui->setupUi(this);
 
     // 创建一个 native 子窗口，让 VideoRender 渲染到这个子窗口
     m_displayWnd = new QWidget(this);
     m_displayWnd->setAttribute(Qt::WA_NativeWindow);      // 确保有原生窗口句柄
+
+    m_displayWnd->setAttribute(Qt::WA_TranslucentBackground, true);
+    m_displayWnd->setStyleSheet("background: transparent");
+
     m_displayWnd->setVisible(false);
     // m_displayWnd->show();
 
@@ -133,6 +138,15 @@ CameraWgt::~CameraWgt()
     WaitForSingleObject(m_threadHandle, INFINITE);
     CloseHandle(m_threadHandle);
     m_threadHandle = NULL;
+
+    // 清理最后一帧
+    {
+        QMutexLocker locker(&m_mxLastFrame);
+        if (m_hasLastFrame && m_lastFrame.m_pImageBuf) {
+            free(m_lastFrame.m_pImageBuf);
+            m_lastFrame.m_pImageBuf = NULL;
+        }
+    }
 
     delete ui;
 }
@@ -185,7 +199,7 @@ bool CameraWgt::CameraOpen(void)
     QByteArray cameraKeyArray = m_currentCameraKey.toLocal8Bit();
     char* cameraKey = cameraKeyArray.data();
 
-    //  创建相机句柄
+    // 创建相机句柄
     ret = IMV_CreateHandle(&m_devHandle, modeByCameraKey, (void*)cameraKey);
     if (IMV_OK != ret) {
         printf("create devHandle failed! cameraKey[%s], ErrorCode[%d]\n", cameraKey, ret);
@@ -238,6 +252,22 @@ bool CameraWgt::CameraClose(void)
 
     m_devHandle = NULL;
 
+    // 清理最后一帧
+    {
+        QMutexLocker locker(&m_mxLastFrame);
+        if (m_hasLastFrame && m_lastFrame.m_pImageBuf) {
+            free(m_lastFrame.m_pImageBuf);
+            m_lastFrame.m_pImageBuf = NULL;
+            m_hasLastFrame = false;
+        }
+    }
+
+    // 关闭渲染器
+    closeRender();
+
+    // 隐藏显示窗口
+    m_displayWnd->setVisible(false);
+
     return true;
 }
 
@@ -289,15 +319,16 @@ bool CameraWgt::CameraStop()
     }
 
     // 清空显示队列
-    // clear display queue
     CFrameInfo frameOld;
     while (m_qDisplayFrameQueue.get(frameOld))
     {
         free(frameOld.m_pImageBuf);
         frameOld.m_pImageBuf = NULL;
     }
-
     m_qDisplayFrameQueue.clear();
+
+    // 停止后立即重绘最后一帧，确保画面保持
+    redrawLastFrame();
 
     return true;
 }
@@ -428,6 +459,31 @@ bool CameraWgt::ShowImage(unsigned char* pRgbFrameBuf, int nWidth, int nHeight, 
         }
     }
 
+    // 保存最后一帧数据（在渲染之前保存）
+    {
+        QMutexLocker locker(&m_mxLastFrame);
+
+        // 释放旧数据
+        if (m_hasLastFrame && m_lastFrame.m_pImageBuf) {
+            free(m_lastFrame.m_pImageBuf);
+        }
+
+        // 计算需要的缓冲区大小
+        int bufferSize = nWidth * nHeight * (nPixelFormat == gvspPixelMono8 ? 1 : 3);
+
+        // 保存新数据
+        m_lastFrame.m_nWidth = nWidth;
+        m_lastFrame.m_nHeight = nHeight;
+        m_lastFrame.m_nBufferSize = bufferSize;
+        m_lastFrame.m_ePixelType = nPixelFormat;
+        m_lastFrame.m_pImageBuf = (unsigned char*)malloc(bufferSize);
+
+        if (m_lastFrame.m_pImageBuf) {
+            memcpy(m_lastFrame.m_pImageBuf, pRgbFrameBuf, bufferSize);
+            m_hasLastFrame = true;
+        }
+    }
+
     VR_FRAME_S renderParam = { 0 };
     renderParam.data[0] = pRgbFrameBuf;
     renderParam.stride[0] = nWidth;
@@ -550,9 +606,7 @@ void CameraWgt::resizeEvent(QResizeEvent *event) {
         return;
     }
 
-    QTimer::singleShot(50, this, [this]() {
-        updateDisplayGeometry();
-    });
+    updateDisplayGeometry();
 }
 
 bool CameraWgt::isTimeToDisplay()
@@ -757,6 +811,28 @@ bool CameraWgt::closeRender()
     return true;
 }
 
+void CameraWgt::redrawLastFrame() {
+    QMutexLocker locker(&m_mxLastFrame);
+
+    if (!m_hasLastFrame || !m_lastFrame.m_pImageBuf || !m_handler) {
+        return;
+    }
+
+    VR_FRAME_S renderParam = { 0 };
+    renderParam.data[0] = m_lastFrame.m_pImageBuf;
+    renderParam.stride[0] = m_lastFrame.m_nWidth;
+    renderParam.nWidth = m_lastFrame.m_nWidth;
+    renderParam.nHeight = m_lastFrame.m_nHeight;
+
+    if (m_lastFrame.m_ePixelType == gvspPixelMono8) {
+        renderParam.format = VR_PIXEL_FMT_MONO8;
+    } else {
+        renderParam.format = VR_PIXEL_FMT_RGB24;
+    }
+
+    VR_RenderFrame(m_handler, &renderParam, NULL);
+}
+
 /**
  * @author xl-1/4
  * @version 1.0
@@ -873,6 +949,13 @@ void CameraWgt::updateDisplayGeometry() {
 
     // 设置显示窗口的位置和大小
     m_displayWnd->setGeometry(finalX, finalY, displayWidth, displayHeight);
+
+    if (!IMV_IsGrabbing(m_devHandle)) {
+        // 延迟一点时间确保窗口调整完成
+        QTimer::singleShot(10, this, [this]() {
+            redrawLastFrame();
+        });
+    }
 }
 
 void CameraWgt::mousePressEvent(QMouseEvent *event) {
