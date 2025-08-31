@@ -2,5 +2,10 @@
     <qresource prefix="/">
         <file>ico/icon.png</file>
         <file>style/style.qss</file>
+        <file>ico/5.ico</file>
+        <file>ico/next.png</file>
+        <file>ico/previous.png</file>
+        <file>ico/next-hover.png</file>
+        <file>ico/previous-hover.png</file>
     </qresource>
 </RCC>

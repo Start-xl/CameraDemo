@@ -14,210 +14,190 @@
    <string>CameraDemo</string>
   </property>
   <property name="windowIcon">
-   <iconset>
-    <normaloff>:/ico/icon.png</normaloff>:/ico/icon.png</iconset>
+   <iconset resource="resource.qrc">
+    <normaloff>:/ico/5.ico</normaloff>:/ico/5.ico</iconset>
   </property>
   <property name="styleSheet">
    <string notr="true"/>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QVBoxLayout" name="verticalLayout_8">
+   <layout class="QHBoxLayout" name="horizontalLayout_4" stretch="1,3,1">
+    <property name="spacing">
+     <number>20</number>
+    </property>
     <item>
-     <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="1,3,1">
+     <layout class="QVBoxLayout" name="verticalLayout_4" stretch="1,1">
+      <item>
+       <widget class="QGroupBox" name="groupBox_2">
+        <property name="title">
+         <string>设备列表</string>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_2">
+         <item>
+          <widget class="QTreeView" name="deviceModel_Tree"/>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="QGroupBox" name="groupBox">
+        <property name="title">
+         <string>设备信息</string>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout">
+         <item>
+          <widget class="QTableWidget" name="deviceInfo_Wgt">
+           <attribute name="horizontalHeaderVisible">
+            <bool>false</bool>
+           </attribute>
+           <attribute name="verticalHeaderVisible">
+            <bool>false</bool>
+           </attribute>
+           <row>
+            <property name="text">
+             <string>物理地址</string>
+            </property>
+           </row>
+           <row>
+            <property name="text">
+             <string>IP地址</string>
+            </property>
+           </row>
+           <row>
+            <property name="text">
+             <string>子网掩码</string>
+            </property>
+           </row>
+           <row>
+            <property name="text">
+             <string>网关</string>
+            </property>
+           </row>
+           <row>
+            <property name="text">
+             <string>设备版本</string>
+            </property>
+           </row>
+           <row>
+            <property name="text">
+             <string>序列号</string>
+            </property>
+           </row>
+           <row>
+            <property name="text">
+             <string>协议版本</string>
+            </property>
+           </row>
+           <column>
+            <property name="text">
+             <string>设备相关信息</string>
+            </property>
+           </column>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <layout class="QVBoxLayout" name="verticalLayout_6" stretch="1,0,0">
       <property name="spacing">
-       <number>20</number>
+       <number>10</number>
       </property>
       <item>
-       <layout class="QVBoxLayout" name="verticalLayout_4" stretch="1,1">
+       <widget class="QGroupBox" name="groupBox_4">
+        <property name="title">
+         <string>图像显示</string>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_5">
+         <item>
+          <widget class="CameraWgt" name="cameraWgt" native="true">
+           <property name="styleSheet">
+            <string notr="true"/>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <property name="spacing">
+         <number>20</number>
+        </property>
         <item>
-         <widget class="QGroupBox" name="groupBox_2">
-          <property name="title">
-           <string>设备列表</string>
+         <widget class="QPushButton" name="startGrab_Btn">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>36</height>
+           </size>
           </property>
-          <layout class="QVBoxLayout" name="verticalLayout_2">
-           <item>
-            <widget class="QTreeView" name="deviceModel_Tree"/>
-           </item>
-          </layout>
+          <property name="text">
+           <string>开始采集</string>
+          </property>
          </widget>
         </item>
         <item>
-         <widget class="QGroupBox" name="groupBox">
-          <property name="title">
-           <string>设备信息</string>
+         <widget class="QPushButton" name="stopGrab_Btn">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>36</height>
+           </size>
           </property>
-          <layout class="QVBoxLayout" name="verticalLayout">
-           <item>
-            <widget class="QTableWidget" name="deviceInfo_Wgt">
-             <attribute name="horizontalHeaderVisible">
-              <bool>false</bool>
-             </attribute>
-             <attribute name="verticalHeaderVisible">
-              <bool>false</bool>
-             </attribute>
-             <row>
-              <property name="text">
-               <string>物理地址</string>
-              </property>
-             </row>
-             <row>
-              <property name="text">
-               <string>IP地址</string>
-              </property>
-             </row>
-             <row>
-              <property name="text">
-               <string>子网掩码</string>
-              </property>
-             </row>
-             <row>
-              <property name="text">
-               <string>网关</string>
-              </property>
-             </row>
-             <row>
-              <property name="text">
-               <string>设备版本</string>
-              </property>
-             </row>
-             <row>
-              <property name="text">
-               <string>序列号</string>
-              </property>
-             </row>
-             <row>
-              <property name="text">
-               <string>协议版本</string>
-              </property>
-             </row>
-             <column>
-              <property name="text">
-               <string>设备相关信息</string>
-              </property>
-             </column>
-            </widget>
-           </item>
-          </layout>
+          <property name="text">
+           <string>停止采集</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="closeDevice_Btn">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>36</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>关闭设备</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="saveImage_Btn">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>36</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>保存图像</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="imageStatistic_Btn">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>36</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>图像统计</string>
+          </property>
          </widget>
         </item>
        </layout>
       </item>
       <item>
-       <layout class="QVBoxLayout" name="verticalLayout_6" stretch="1,0,0">
-        <item>
-         <widget class="QGroupBox" name="groupBox_4">
-          <property name="title">
-           <string>图像显示</string>
-          </property>
-          <layout class="QVBoxLayout" name="verticalLayout_5">
-           <item>
-            <widget class="CameraWgt" name="cameraWgt" native="true">
-             <property name="styleSheet">
-              <string notr="true"/>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-        </item>
-        <item>
-         <layout class="QHBoxLayout" name="horizontalLayout">
-          <property name="spacing">
-           <number>20</number>
-          </property>
-          <item>
-           <widget class="QPushButton" name="startGrab_Btn">
-            <property name="minimumSize">
-             <size>
-              <width>0</width>
-              <height>36</height>
-             </size>
-            </property>
-            <property name="text">
-             <string>开始采集</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="stopGrab_Btn">
-            <property name="minimumSize">
-             <size>
-              <width>0</width>
-              <height>36</height>
-             </size>
-            </property>
-            <property name="text">
-             <string>停止采集</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="closeDevice_Btn">
-            <property name="minimumSize">
-             <size>
-              <width>0</width>
-              <height>36</height>
-             </size>
-            </property>
-            <property name="text">
-             <string>关闭设备</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="saveImage_Btn">
-            <property name="minimumSize">
-             <size>
-              <width>0</width>
-              <height>36</height>
-             </size>
-            </property>
-            <property name="text">
-             <string>保存图像</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="imageStatistic_Btn">
-            <property name="minimumSize">
-             <size>
-              <width>0</width>
-              <height>36</height>
-             </size>
-            </property>
-            <property name="text">
-             <string>图像统计</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="flipHorizontal_Btn">
-            <property name="minimumSize">
-             <size>
-              <width>0</width>
-              <height>36</height>
-             </size>
-            </property>
-            <property name="text">
-             <string>水平翻转</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="flipVertical_Btn">
-            <property name="minimumSize">
-             <size>
-              <width>0</width>
-              <height>36</height>
-             </size>
-            </property>
-            <property name="text">
-             <string>垂直翻转</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
+       <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <property name="spacing">
+         <number>30</number>
+        </property>
         <item>
          <widget class="QLabel" name="statistic_Lab">
           <property name="minimumSize">
@@ -239,189 +219,288 @@
 }</string>
           </property>
           <property name="text">
-           <string>Statistics</string>
+           <string/>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="saveFile_Lab">
+          <property name="styleSheet">
+           <string notr="true">QLabel {
+    color: #ffa02f;
+    font-size: 18px;
+    padding: 2px;
+}</string>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
           </property>
          </widget>
         </item>
        </layout>
       </item>
-      <item>
-       <widget class="QGroupBox" name="groupBox_3">
-        <property name="title">
-         <string>设备属性</string>
-        </property>
-        <layout class="QVBoxLayout" name="verticalLayout_3">
-         <item>
-          <widget class="QWidget" name="deviceProperties_Wgt" native="true">
-           <layout class="QVBoxLayout" name="verticalLayout_7">
-            <item>
-             <layout class="QGridLayout" name="gridLayout">
-              <property name="horizontalSpacing">
-               <number>10</number>
+     </layout>
+    </item>
+    <item>
+     <widget class="QGroupBox" name="groupBox_3">
+      <property name="title">
+       <string>设备属性</string>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout_9">
+       <item>
+        <widget class="QWidget" name="deviceProperties_Wgt" native="true">
+         <layout class="QHBoxLayout" name="horizontalLayout_3">
+          <item>
+           <layout class="QGridLayout" name="gridLayout">
+            <item row="4" column="0">
+             <widget class="QLabel" name="gain_Lab">
+              <property name="styleSheet">
+               <string notr="true">QLabel {
+    color: #b1b1b1;
+    font-size: 18px;
+    padding: 2px;
+}</string>
               </property>
-              <property name="verticalSpacing">
-               <number>40</number>
+              <property name="text">
+               <string>增益</string>
               </property>
-              <item row="5" column="1">
-               <widget class="QSlider" name="lightness_Slider">
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="1">
-               <widget class="QSlider" name="frameRate_Slider">
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-               </widget>
-              </item>
-              <item row="5" column="0">
-               <widget class="QLabel" name="lightness_Lab">
-                <property name="styleSheet">
-                 <string notr="true">QLabel {
+             </widget>
+            </item>
+            <item row="3" column="1">
+             <widget class="QCheckBox" name="autoGain_Check">
+              <property name="text">
+               <string/>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="2">
+             <widget class="QDoubleSpinBox" name="frameRate_DSpin"/>
+            </item>
+            <item row="2" column="2">
+             <widget class="QDoubleSpinBox" name="exposure_DSpin"/>
+            </item>
+            <item row="3" column="0">
+             <widget class="QLabel" name="autoGain_Lab">
+              <property name="styleSheet">
+               <string notr="true">QLabel {
     color: #b1b1b1;
     font-size: 18px;
     padding: 2px;
 }</string>
-                </property>
-                <property name="text">
-                 <string>亮度</string>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="2">
-               <widget class="QDoubleSpinBox" name="exposure_DSpin"/>
-              </item>
-              <item row="4" column="1">
-               <widget class="QSlider" name="sharpness_Slider">
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="2">
-               <widget class="QDoubleSpinBox" name="frameRate_DSpin"/>
-              </item>
-              <item row="3" column="2">
-               <widget class="QSpinBox" name="noiseReduce_Spin"/>
-              </item>
-              <item row="5" column="2">
-               <widget class="QSpinBox" name="lightness_Spin"/>
-              </item>
-              <item row="2" column="0">
-               <widget class="QLabel" name="gain_Lab">
-                <property name="styleSheet">
-                 <string notr="true">QLabel {
+              </property>
+              <property name="text">
+               <string>自动增益</string>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="1">
+             <widget class="QSlider" name="gain_Slider">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="autoExposure_Lab">
+              <property name="styleSheet">
+               <string notr="true">QLabel {
     color: #b1b1b1;
     font-size: 18px;
     padding: 2px;
 }</string>
-                </property>
-                <property name="text">
-                 <string>增益</string>
-                </property>
-               </widget>
-              </item>
-              <item row="2" column="1">
-               <widget class="QSlider" name="gain_Slider">
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="0">
-               <widget class="QLabel" name="exposure_Lab">
-                <property name="styleSheet">
-                 <string notr="true">QLabel {
+              </property>
+              <property name="text">
+               <string>自动曝光</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QSlider" name="frameRate_Slider">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QCheckBox" name="autoExposure_Check">
+              <property name="text">
+               <string/>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="1">
+             <widget class="QSlider" name="exposure_Slider">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="0">
+             <widget class="QLabel" name="exposure_Lab">
+              <property name="styleSheet">
+               <string notr="true">QLabel {
     color: #b1b1b1;
     font-size: 18px;
     padding: 2px;
 }</string>
-                </property>
-                <property name="text">
-                 <string>曝光时间</string>
-                </property>
-               </widget>
-              </item>
-              <item row="3" column="0">
-               <widget class="QLabel" name="noiseReduce_Lab">
-                <property name="styleSheet">
-                 <string notr="true">QLabel {
+              </property>
+              <property name="text">
+               <string>曝光设置</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="0">
+             <widget class="QLabel" name="frameRate_Lab">
+              <property name="styleSheet">
+               <string notr="true">QLabel {
     color: #b1b1b1;
     font-size: 18px;
     padding: 2px;
 }</string>
-                </property>
-                <property name="text">
-                 <string>降噪</string>
-                </property>
-               </widget>
-              </item>
-              <item row="4" column="2">
-               <widget class="QSpinBox" name="sharpness_Spin"/>
-              </item>
-              <item row="2" column="2">
-               <widget class="QDoubleSpinBox" name="gain_DSpin"/>
-              </item>
-              <item row="0" column="0">
-               <widget class="QLabel" name="frameRate_Lab">
-                <property name="styleSheet">
-                 <string notr="true">QLabel {
-    color: #b1b1b1;
-    font-size: 18px;
-    padding: 2px;
-}</string>
-                </property>
-                <property name="text">
-                 <string>帧率</string>
-                </property>
-               </widget>
-              </item>
-              <item row="4" column="0">
-               <widget class="QLabel" name="sharpness_Lab">
-                <property name="styleSheet">
-                 <string notr="true">QLabel {
-    color: #b1b1b1;
-    font-size: 18px;
-    padding: 2px;
-}</string>
-                </property>
-                <property name="text">
-                 <string>锐度</string>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="1">
-               <widget class="QSlider" name="exposure_Slider">
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-               </widget>
-              </item>
-              <item row="3" column="1">
-               <widget class="QSlider" name="noiseReduce_Slider">
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-               </widget>
-              </item>
-              <item row="6" column="0">
-               <widget class="QLabel" name="label">
-                <property name="text">
-                 <string/>
-                </property>
-               </widget>
-              </item>
-             </layout>
+              </property>
+              <property name="text">
+               <string>帧率</string>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="2">
+             <widget class="QDoubleSpinBox" name="gain_DSpin"/>
             </item>
            </layout>
-          </widget>
-         </item>
-        </layout>
-       </widget>
-      </item>
-     </layout>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QWidget" name="deviceIP_Wgt" native="true">
+         <layout class="QVBoxLayout" name="verticalLayout_8">
+          <item>
+           <widget class="QGroupBox" name="groupBox_5">
+            <property name="title">
+             <string>接口信息</string>
+            </property>
+            <layout class="QHBoxLayout" name="horizontalLayout_5">
+             <item>
+              <layout class="QGridLayout" name="gridLayout_2">
+               <property name="spacing">
+                <number>10</number>
+               </property>
+               <item row="1" column="0">
+                <widget class="QLabel" name="interfaceSubnet_Lab">
+                 <property name="styleSheet">
+                  <string notr="true">QLabel {
+    color: #b1b1b1;
+    font-size: 18px;
+    padding: 2px;
+}</string>
+                 </property>
+                 <property name="text">
+                  <string>子网掩码</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="0">
+                <widget class="QLabel" name="interfaceIP_Lab">
+                 <property name="styleSheet">
+                  <string notr="true">QLabel {
+    color: #b1b1b1;
+    font-size: 18px;
+    padding: 2px;
+}</string>
+                 </property>
+                 <property name="text">
+                  <string>IP地址</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="1">
+                <widget class="QLineEdit" name="interfaceIP_Line"/>
+               </item>
+               <item row="1" column="1">
+                <widget class="QLineEdit" name="interfaceSubnet_Line"/>
+               </item>
+              </layout>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item>
+           <widget class="QGroupBox" name="groupBox_6">
+            <property name="title">
+             <string>设备信息</string>
+            </property>
+            <layout class="QHBoxLayout" name="horizontalLayout_6">
+             <item>
+              <layout class="QGridLayout" name="gridLayout_3">
+               <property name="spacing">
+                <number>10</number>
+               </property>
+               <item row="0" column="0">
+                <widget class="QLabel" name="deviceIP_Lab">
+                 <property name="styleSheet">
+                  <string notr="true">QLabel {
+    color: #b1b1b1;
+    font-size: 18px;
+    padding: 2px;
+}</string>
+                 </property>
+                 <property name="text">
+                  <string>IP地址</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="1">
+                <widget class="QLineEdit" name="deviceSubnet_Line"/>
+               </item>
+               <item row="0" column="1">
+                <widget class="QLineEdit" name="deviceIP_Line"/>
+               </item>
+               <item row="1" column="0">
+                <widget class="QLabel" name="deviceSubnet_Lab">
+                 <property name="styleSheet">
+                  <string notr="true">QLabel {
+    color: #b1b1b1;
+    font-size: 18px;
+    padding: 2px;
+}</string>
+                 </property>
+                 <property name="text">
+                  <string>子网掩码</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="0">
+                <widget class="QPushButton" name="setIP_Btn">
+                 <property name="minimumSize">
+                  <size>
+                   <width>100</width>
+                   <height>36</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>100</width>
+                   <height>36</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>设置IP</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+            </layout>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+      </layout>
+     </widget>
     </item>
    </layout>
   </widget>
@@ -434,6 +513,8 @@
    <container>1</container>
   </customwidget>
  </customwidgets>
- <resources/>
+ <resources>
+  <include location="resource.qrc"/>
+ </resources>
  <connections/>
 </ui>

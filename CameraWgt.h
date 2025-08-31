@@ -103,6 +103,10 @@ public:
     // 设置当前相机
     // set current camera
     void SetCamera(const QString& strKey);
+    // 保存截图
+    bool saveSnapshotToDir(const QString &dirPath);
+    // 设置设备IP
+    bool setDeviceIP(const QString &deviceIP, const QString &subnetMask, const QString &gateway);
 
     // 状态栏统计信息
     // Status bar statistics

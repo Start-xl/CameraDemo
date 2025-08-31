@@ -4,8 +4,10 @@
 #include <QPainter>
 #include <QTimer>
 #include <QtGlobal>
+#include <QDateTime>
+#include <QDir>
 
-#define DEFAULT_SHOW_RATE (20) // 默认显示帧率 | defult display frequency
+#define DEFAULT_SHOW_RATE (30) // 默认显示帧率 | defult display frequency
 #define DEFAULT_ERROR_STRING ("N/A")
 #define MAX_FRAME_STAT_NUM (50)
 #define MIN_LEFT_LIST_NUM (2)
@@ -436,6 +438,94 @@ void CameraWgt::SetCamera(const QString& strKey)
     m_currentCameraKey = strKey;
 }
 
+bool CameraWgt::saveSnapshotToDir(const QString &dirPath) {
+    QMutexLocker locker(&m_mxLastFrame);
+
+    if (!m_hasLastFrame || !m_lastFrame.m_pImageBuf) {
+        qWarning("No frame available for snapshot.");
+        return false;
+    }
+
+    // 确保目录存在
+    QDir dir(dirPath);
+    if (!dir.exists()) {
+        if (!dir.mkpath(".")) {
+            qWarning("Failed to create directory for snapshot.");
+            return false;
+        }
+    }
+
+    // 生成唯一文件名
+    QString fileName = QDateTime::currentDateTime().toString("yyyy-MM-dd_hh-mm-ss-zzz") + ".png";
+    QString filePath = dir.filePath(fileName);
+
+    // 构造 QImage
+    QImage image;
+    if (m_lastFrame.m_ePixelType == gvspPixelMono8) {
+        image = QImage(m_lastFrame.m_pImageBuf,
+                       m_lastFrame.m_nWidth,
+                       m_lastFrame.m_nHeight,
+                       m_lastFrame.m_nWidth,
+                       QImage::Format_Grayscale8);
+    } else {
+        image = QImage(m_lastFrame.m_pImageBuf,
+                       m_lastFrame.m_nWidth,
+                       m_lastFrame.m_nHeight,
+                       m_lastFrame.m_nWidth * 3,
+                       QImage::Format_RGB888).rgbSwapped();
+    }
+
+    if (image.isNull()) {
+        qWarning("Failed to create QImage for snapshot.");
+        return false;
+    }
+
+    bool ok = image.save(filePath);
+    if (ok)
+        qDebug() << "Snapshot saved:" << filePath;
+    else
+        qWarning("Snapshot save failed.");
+
+    return ok;
+}
+
+/**
+ * @author xl-1/4
+ * @version 1.0
+ * @brief TODO 修改设备IP地址
+ * @date 2025-08-31
+ */
+bool CameraWgt::setDeviceIP(const QString &deviceIP, const QString &subnetMask, const QString &gateway) {
+    // QByteArray cameraKeyArray = m_currentCameraKey.toLocal8Bit();
+    // char* cameraKey = cameraKeyArray.data();
+
+    // // 创建相机句柄
+    // int ret = IMV_CreateHandle(&m_devHandle, modeByCameraKey, (void*)cameraKey);
+    // if (IMV_OK != ret) {
+    //     printf("create devHandle failed! cameraKey[%s], ErrorCode[%d]\n", cameraKey, ret);
+    // }
+
+    // 转换QString为C字符串
+    QByteArray ipBytes = deviceIP.toLocal8Bit();
+    QByteArray subnetBytes = subnetMask.toLocal8Bit();
+    QByteArray gateBytes = gateway.toLocal8Bit();
+    char* ip = ipBytes.data();
+    char* subnet = subnetBytes.data();
+    char* gate = gateBytes.data();
+
+    // 调用SDK接口设置IP
+    int ret = IMV_GIGE_ForceIpAddress(m_devHandle, ip, subnet, gate);
+    if (ret != IMV_OK) {
+        printf("Set IP failed! ErrorCode[%d]\n", ret);
+        IMV_DestroyHandle(m_devHandle);
+        return false;
+    }
+
+    IMV_DestroyHandle(m_devHandle);
+    printf("Set IP address successfully: %s\n", ip);
+    return true;
+}
+
 // 显示
 // diaplay
 bool CameraWgt::ShowImage(unsigned char* pRgbFrameBuf, int nWidth, int nHeight, IMV_EPixelType nPixelFormat)
@@ -455,7 +545,7 @@ bool CameraWgt::ShowImage(unsigned char* pRgbFrameBuf, int nWidth, int nHeight, 
 
     if (NULL == m_handler) {
         if (!openRender(nWidth, nHeight) && NULL == m_handler) {
-                return false;
+            return false;
         }
     }
 

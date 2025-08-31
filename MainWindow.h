@@ -40,6 +40,10 @@ private slots:
 
     void on_imageStatistic_Btn_clicked();
 
+    void on_saveImage_Btn_clicked();
+
+    void on_setIP_Btn_clicked();
+
 private:
     Ui::MainWindow *ui;
 
