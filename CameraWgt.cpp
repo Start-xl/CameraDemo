@@ -495,17 +495,17 @@ bool CameraWgt::saveSnapshotToDir(const QString &dirPath) {
  * @brief TODO 修改设备IP地址
  * @date 2025-08-31
  */
-bool CameraWgt::setDeviceIP(const QString &deviceIP, const QString &subnetMask, const QString &gateway) {
-    // QByteArray cameraKeyArray = m_currentCameraKey.toLocal8Bit();
-    // char* cameraKey = cameraKeyArray.data();
+bool CameraWgt::setDeviceIP(const QString& deviceIP, const QString& subnetMask, const QString& gateway) {
+    QByteArray cameraKeyArray = m_currentCameraKey.toLocal8Bit();
+    char* cameraKey = cameraKeyArray.data();
 
-    // // 创建相机句柄
-    // int ret = IMV_CreateHandle(&m_devHandle, modeByCameraKey, (void*)cameraKey);
-    // if (IMV_OK != ret) {
-    //     printf("create devHandle failed! cameraKey[%s], ErrorCode[%d]\n", cameraKey, ret);
-    // }
+    // 创建相机句柄
+    int ret = IMV_CreateHandle(&m_devHandle, modeByCameraKey, (void*)cameraKey);
+    if (IMV_OK != ret) {
+        printf("create devHandle failed! cameraKey[%s], ErrorCode[%d]\n", cameraKey, ret);
+    }
 
-    // 转换QString为C字符串
+    // 转换QString为 C字符串
     QByteArray ipBytes = deviceIP.toLocal8Bit();
     QByteArray subnetBytes = subnetMask.toLocal8Bit();
     QByteArray gateBytes = gateway.toLocal8Bit();
@@ -514,15 +514,15 @@ bool CameraWgt::setDeviceIP(const QString &deviceIP, const QString &subnetMask, 
     char* gate = gateBytes.data();
 
     // 调用SDK接口设置IP
-    int ret = IMV_GIGE_ForceIpAddress(m_devHandle, ip, subnet, gate);
-    if (ret != IMV_OK) {
+    ret = IMV_GIGE_ForceIpAddress(m_devHandle, ip, subnet, gate);
+    qDebug() << ret << "jiangxl" << endl;
+    m_devHandle = NULL;
+    if (!CameraOpen()) {
         printf("Set IP failed! ErrorCode[%d]\n", ret);
-        IMV_DestroyHandle(m_devHandle);
         return false;
     }
 
-    IMV_DestroyHandle(m_devHandle);
-    printf("Set IP address successfully: %s\n", ip);
+    m_devHandle = NULL;
     return true;
 }
 

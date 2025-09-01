@@ -44,6 +44,8 @@ private slots:
 
     void on_setIP_Btn_clicked();
 
+    void on_deviceModel_Tree_clicked(const QModelIndex &index);
+
 private:
     Ui::MainWindow *ui;
 
@@ -58,6 +60,8 @@ private:
     QString deviceVersion;              // 设备版本
     QString serialNum;                  // 序列号
     QString protocolVersion;            // 协议版本
+
+    int currentIndex;                   // 当前点击树项目的index
 
     ImageStatisticWgt* imageStatistic;
 };

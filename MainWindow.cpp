@@ -53,12 +53,7 @@ void MainWindow::initUi() {
             model->appendRow(rootItem);
         }
 
-        ui->interfaceIP_Line->setText(m_deviceInfoList.pDevInfo[0].InterfaceInfo.gigeInterfaceInfo.ipAddress);
-        ui->interfaceSubnet_Line->setText(m_deviceInfoList.pDevInfo[0].InterfaceInfo.gigeInterfaceInfo.subnetMask);
-        ui->deviceIP_Line->setText(m_deviceInfoList.pDevInfo[0].DeviceSpecificInfo.gigeDeviceInfo.ipAddress);
-        ui->deviceSubnet_Line->setText(m_deviceInfoList.pDevInfo[0].DeviceSpecificInfo.gigeDeviceInfo.subnetMask);
-
-        ui->cameraWgt->SetCamera(m_deviceInfoList.pDevInfo[0].cameraKey);
+        // ui->cameraWgt->SetCamera(m_deviceInfoList.pDevInfo[0].cameraKey);
     }
     ui->startGrab_Btn->setEnabled(false);
     ui->stopGrab_Btn->setEnabled(false);
@@ -66,6 +61,7 @@ void MainWindow::initUi() {
     ui->saveImage_Btn->setEnabled(false);
     ui->imageStatistic_Btn->setEnabled(false);
     ui->deviceProperties_Wgt->setVisible(false);
+    ui->setIP_Btn->setEnabled(false);
 }
 
 /**
@@ -113,8 +109,6 @@ void MainWindow::displayDeviceInfo(const QModelIndex &index) {
     QTableWidgetItem* protocolVersionItem = new QTableWidgetItem(protocolVersion);
     ui->deviceInfo_Wgt->setItem(6, 0, protocolVersionItem);
     protocolVersionItem->setToolTip(protocolVersion);
-
-
 }
 
 /**
@@ -281,12 +275,8 @@ void MainWindow::on_saveImage_Btn_clicked() {
  * @date 2025-08-31
  */
 void MainWindow::on_setIP_Btn_clicked() {
-    QItemSelectionModel* selectionModel = ui->deviceModel_Tree->selectionModel();
-    int currentIndex = selectionModel->currentIndex().row();
-    ui->cameraWgt->SetCamera(m_deviceInfoList.pDevInfo[currentIndex].cameraKey);
-
-    deviceIP = ui->deviceIP_Line->text();
-    deviceSubnetMask = ui->deviceSubnet_Line->text();
+    QString IP = ui->deviceIP_Line->text();
+    QString SubnetMask = ui->deviceSubnet_Line->text();
 
     QTimer* timer = new QTimer();
     timer->setSingleShot(true);
@@ -294,13 +284,37 @@ void MainWindow::on_setIP_Btn_clicked() {
         ui->saveFile_Lab->setText("");
     });
 
-    // bool success = ui->cameraWgt->setDeviceIP(deviceIP, deviceSubnetMask, "0.0.0.0");
-    // if (success) {
-    //     ui->saveFile_Lab->setText(QStringLiteral("设备IP设置成功!"));
-    //     timer->start(1500);
-    // } else {
-    //     ui->saveFile_Lab->setText(QStringLiteral("设备与主机IP网段不匹配!"));
-    //     timer->start(1500);
-    // }
+    bool success = ui->cameraWgt->setDeviceIP(IP, SubnetMask, QString("0.0.0.0"));
+    if (success) {
+        ui->saveFile_Lab->setText(QStringLiteral("设备IP设置成功!"));
+        timer->start(1500);
+        IMV_EnumDevices(&m_deviceInfoList, interfaceTypeAll);
+        QString treeData = m_deviceInfoList.pDevInfo[currentIndex].cameraName + QString(" (")
+                           + m_deviceInfoList.pDevInfo[currentIndex].DeviceSpecificInfo.gigeDeviceInfo.ipAddress
+                           + ")";
+        ui->deviceModel_Tree->model()->setData(ui->deviceModel_Tree->currentIndex(), treeData, Qt::DisplayRole);
+    } else {
+        ui->saveFile_Lab->setText(QStringLiteral("设备与主机IP网段不匹配!"));
+        timer->start(1500);
+    }
+}
+
+/**
+ * @author xl-1/4
+ * @version 1.0
+ * @brief TODO 单击显示设置IP按钮
+ * @date 2025-09-01
+ */
+void MainWindow::on_deviceModel_Tree_clicked(const QModelIndex &index) {
+    currentIndex = index.row();
+    ui->cameraWgt->SetCamera(m_deviceInfoList.pDevInfo[currentIndex].cameraKey);
+
+    // 显示设备信息和接口信息
+    ui->interfaceIP_Line->setText(m_deviceInfoList.pDevInfo[currentIndex].InterfaceInfo.gigeInterfaceInfo.ipAddress);
+    ui->interfaceSubnet_Line->setText(m_deviceInfoList.pDevInfo[currentIndex].InterfaceInfo.gigeInterfaceInfo.subnetMask);
+    ui->deviceIP_Line->setText(m_deviceInfoList.pDevInfo[currentIndex].DeviceSpecificInfo.gigeDeviceInfo.ipAddress);
+    ui->deviceSubnet_Line->setText(m_deviceInfoList.pDevInfo[currentIndex].DeviceSpecificInfo.gigeDeviceInfo.subnetMask);
+
+    ui->setIP_Btn->setEnabled(true);
 }
 
