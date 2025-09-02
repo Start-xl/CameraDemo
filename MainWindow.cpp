@@ -62,6 +62,17 @@ void MainWindow::initUi() {
     ui->imageStatistic_Btn->setEnabled(false);
     ui->deviceProperties_Wgt->setVisible(false);
     ui->setIP_Btn->setEnabled(false);
+
+    connect(ui->autoExposure_Check, &QCheckBox::stateChanged, this, [=](int state) {
+        bool disable = (state == Qt::Checked);
+        ui->exposure_DSpin->setEnabled(!disable);
+        ui->exposure_Slider->setEnabled(!disable);
+    });
+    connect(ui->autoGain_Check, &QCheckBox::stateChanged, this, [=](int state) {
+        bool disable = (state == Qt::Checked);
+        ui->gain_Slider->setEnabled(!disable);
+        ui->gain_DSpin->setEnabled(!disable);
+    });
 }
 
 /**
@@ -242,7 +253,8 @@ void MainWindow::on_closeDevice_Btn_clicked() {
  * @date 2025-08-27
  */
 void MainWindow::on_imageStatistic_Btn_clicked() {
-    imageStatistic = new ImageStatisticWgt(this);
+    imageStatistic = new ImageStatisticWgt();
+    imageStatistic->setWindowFlags(Qt::Window);
     imageStatistic->show();
 }
 
@@ -317,4 +329,3 @@ void MainWindow::on_deviceModel_Tree_clicked(const QModelIndex &index) {
 
     ui->setIP_Btn->setEnabled(true);
 }
-

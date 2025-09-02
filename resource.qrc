@@ -7,5 +7,6 @@
         <file>ico/previous.png</file>
         <file>ico/next-hover.png</file>
         <file>ico/previous-hover.png</file>
+        <file>ico/checkbox-checked.png</file>
     </qresource>
 </RCC>

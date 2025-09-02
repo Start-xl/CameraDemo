@@ -869,7 +869,7 @@ QTableView {
     border-radius: 6px;
     outline: none;
     color: #b1b1b1;
-    font-size: 15px;
+    font-size: 16px;
     show-decoration-selected: 0;  /* 移除选中装饰 */
     alternate-background-color: transparent;
 }
@@ -886,7 +886,7 @@ QTableView QWidget {
 
 /* 表格项样式 - 保留网格线相关设置 */
 QTableView::item {
-    padding: 6px 8px;
+    padding: 3px 8px;
     border: 1px solid #4a4a4a;  /* 网格线颜色 */
     background-color: transparent;  /* 透明背景 */
 }
@@ -921,7 +921,7 @@ QHeaderView::section {
     padding: 8px 4px;
     border: 1px solid #4a4a4a;  /* 表头网格线 */
     font-weight: bold;
-    font-size: 15px;
+    font-size: 16px;
 }
 
 QHeaderView::section:hover {
@@ -1013,100 +1013,80 @@ QTableView:empty {
 
 /* 基础复选框样式：未选中/未禁用状态 */
 QCheckBox {
-    color: #b1b1b1; /* 与 QWidget 文本色一致 */
-    font-size: 15px; /* 匹配输入控件字体大小 */
-    spacing: 6px; /* 复选框与文本间距 */
+    color: #b1b1b1;
+    font-size: 15px;
+    spacing: 6px;
     background-color: transparent;
 }
 
 /* 复选框指示器（方框核心）- 所有状态通用基础样式 */
 QCheckBox::indicator {
-    width: 16px; /* 正方形指示器 */
+    width: 16px;
     height: 16px;
-    border: 1px solid #b1b1b1; /* 未选中边框色 */
-    border-radius: 3px; /* 与 QLineEdit 圆角统一 */
-    background-color: #323232; /* 主背景色 */
-    position: relative; /* 用于定位模拟对号的伪元素 */
+    border: 1px solid #b1b1b1;
+    border-radius: 3px;
+    background-color: #323232;
+    background-repeat: no-repeat;
+    background-position: center center; /* 图片居中显示 */
 }
 
-/* 1. 未选中状态：仅基础方框 */
+/* 未选中状态：无图片 */
 QCheckBox::indicator:!checked {
     border-color: #b1b1b1;
+    background-image: none;
 }
 
-/* 2. 选中状态：方框+模拟对号（纯样式表实现） */
+/* 选中状态：显示对号图片 + 控制大小 */
 QCheckBox::indicator:checked {
-    border-color: #ffaa00; /* 选中边框用主题橙色 */
-}
-/* 对号左半段：通过旋转的线性渐变模拟 */
-QCheckBox::indicator:checked::indicator {
-    /* 左半段对号：从左下到右上 */
-    background:
-        linear-gradient(45deg, transparent 45%, #ffa02f 45%, #ffa02f 55%, transparent 55%)
-        no-repeat left bottom;
-    background-position: 3px 6px; /* 对号在方框内的位置 */
-}
-/* 对号右半段：通过旋转的线性渐变模拟 */
-QCheckBox::indicator:checked::indicator:indicator {
-    /* 右半段对号：从左上到右下 */
-    background:
-        linear-gradient(135deg, transparent 45%, #ffa02f 45%, #ffa02f 55%, transparent 55%)
-        no-repeat right top;
-    background-position: 5px 4px;
+    border: none; /* 如果你不要边框可以去掉 */
+    background: none;
+    border-image: url(:/ico/checkbox-checked.png) 0 0 0 0 stretch stretch;
 }
 
-/* 3. 半选中状态：橙色渐变填充（无对号） */
+/* 半选中状态 */
 QCheckBox::indicator:indeterminate {
     border-color: #ffaa00;
     background-color: QLinearGradient(
         x1:0, y1:0, x2:1, y2:1,
         stop:0 #ffa02f, stop:1 #d7801a
-    ); /* 与 QScrollBar 手柄渐变一致 */
+    );
+    background-image: none;
 }
 
-/* 4. 悬停状态：边框高亮+背景微亮 */
+/* 悬停状态 */
 QCheckBox::indicator:hover {
-    border-color: #ffaa00; /* 主题橙色边框 */
-    background-color: #3a3a3a; /* 背景轻微提亮 */
+    border-color: #ffaa00;
+    background-color: #3a3a3a;
 }
 
-/* 5. 按下状态：边框深橙+背景压暗 */
+/* 按下状态 */
 QCheckBox::indicator:pressed {
-    border-color: #d7801a; /* 深橙色边框 */
-    background-color: #2d2d2d; /* 与 QPushButton 按下背景一致 */
+    border-color: #d7801a;
+    background-color: #2d2d2d;
 }
 
-/* 6. 禁用状态：文本+边框+对号统一变灰 */
+/* 禁用状态 */
 QCheckBox:disabled {
-    color: #404040; /* 禁用文本色 */
+    color: #404040;
 }
-/* 禁用未选中：暗灰边框 */
+
 QCheckBox::indicator:disabled:!checked {
     border-color: #404040;
     background-color: #323232;
+    background-image: none;
 }
-/* 禁用选中：暗灰边框+灰对号 */
+
+/* 禁用选中状态：显示灰色对号图片 + 控制大小 */
 QCheckBox::indicator:disabled:checked {
     border-color: #404040;
     background-color: #323232;
 }
-QCheckBox::indicator:disabled:checked::indicator {
-    background:
-        linear-gradient(45deg, transparent 45%, #404040 45%, #404040 55%, transparent 55%)
-        no-repeat left bottom;
-    background-position: 3px 6px;
-}
-QCheckBox::indicator:disabled:checked::indicator:indicator {
-    background:
-        linear-gradient(135deg, transparent 45%, #404040 45%, #404040 55%, transparent 55%)
-        no-repeat right top;
-    background-position: 5px 4px;
-}
-/* 禁用半选中：暗灰边框+暗灰渐变 */
+
 QCheckBox::indicator:disabled:indeterminate {
     border-color: #404040;
     background-color: QLinearGradient(
         x1:0, y1:0, x2:1, y2:1,
         stop:0 #404040, stop:1 #383838
     );
+    background-image: none;
 }

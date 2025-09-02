@@ -8,7 +8,7 @@ ImageWgt::ImageWgt(QWidget *parent)
 
 void ImageWgt::setImage(const QImage &img) {
     image = img;
-    resetZoom();
+    fitToWidget();
 }
 
 /**
@@ -32,6 +32,30 @@ void ImageWgt::zoom(double factor) {
 void ImageWgt::resetZoom() {
     scaleFactor = 1.0;
     offset = QPoint(0, 0);
+    update();
+}
+
+/**
+ * @author xl-1/4
+ * @version 1.0
+ * @brief TODO 调整图像大小至合适尺寸
+ * @date 2025-09-02
+ */
+void ImageWgt::fitToWidget() {
+    if (image.isNull() || width() <= 0 || height() <= 0) {
+        return;
+    }
+
+    // 按窗口和图片比例选择合适的缩放因子
+    double scaleX = static_cast<double>(width()) / image.width();
+    double scaleY = static_cast<double>(height()) / image.height();
+    scaleFactor = std::min(scaleX, scaleY);  // 保持宽高比
+
+    // 计算居中偏移
+    QSize imgSize = image.size() * scaleFactor;
+    offset = QPoint((width() - imgSize.width()) / 2,
+                    (height() - imgSize.height()) / 2);
+
     update();
 }
 
@@ -78,7 +102,7 @@ void ImageWgt::mousePressEvent(QMouseEvent *event) {
         lastPos = event->pos();
         setCursor(Qt::ClosedHandCursor);
     } else if (event->button() == Qt::RightButton) { // 点击右键恢复图片原始尺寸
-        resetZoom();
+        fitToWidget();
     }
 }
 

@@ -16,6 +16,7 @@ public:
     void setImage(const QImage &img);
     void zoom(double factor);
     void resetZoom();
+    void fitToWidget();
 
 protected:
     void paintEvent(QPaintEvent*) override;

@@ -515,7 +515,6 @@ bool CameraWgt::setDeviceIP(const QString& deviceIP, const QString& subnetMask, 
 
     // 调用SDK接口设置IP
     ret = IMV_GIGE_ForceIpAddress(m_devHandle, ip, subnet, gate);
-    qDebug() << ret << "jiangxl" << endl;
     m_devHandle = NULL;
     if (!CameraOpen()) {
         printf("Set IP failed! ErrorCode[%d]\n", ret);
