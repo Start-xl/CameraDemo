@@ -13,6 +13,10 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="resource.qrc">
+    <normaloff>:/ico/5.ico</normaloff>:/ico/5.ico</iconset>
+  </property>
   <layout class="QVBoxLayout" name="verticalLayout_5" stretch="1,0,0,0">
    <property name="spacing">
     <number>10</number>

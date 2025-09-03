@@ -108,6 +108,9 @@ public:
     // 设置设备IP
     bool setDeviceIP(const QString &deviceIP, const QString &subnetMask, const QString &gateway);
 
+    bool setAutoExpose(int t);
+    bool setGainAuto(int t);
+
     // 状态栏统计信息
     // Status bar statistics
     void recvNewFrame(quint32 frameSize);

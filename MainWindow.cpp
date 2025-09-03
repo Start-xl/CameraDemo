@@ -67,11 +67,23 @@ void MainWindow::initUi() {
         bool disable = (state == Qt::Checked);
         ui->exposure_DSpin->setEnabled(!disable);
         ui->exposure_Slider->setEnabled(!disable);
+        if (disable) {
+            if (!ui->cameraWgt->setAutoExpose(1)) {
+                ui->exposure_DSpin->setEnabled(disable);
+                ui->exposure_Slider->setEnabled(disable);
+            }
+        }
     });
     connect(ui->autoGain_Check, &QCheckBox::stateChanged, this, [=](int state) {
         bool disable = (state == Qt::Checked);
         ui->gain_Slider->setEnabled(!disable);
         ui->gain_DSpin->setEnabled(!disable);
+        if (disable) {
+            if (!ui->cameraWgt->setGainAuto(1)) {
+                ui->gain_Slider->setEnabled(disable);
+                ui->gain_DSpin->setEnabled(disable);
+            }
+        }
     });
 }
 
@@ -148,6 +160,9 @@ void MainWindow::on_deviceModel_Tree_doubleClicked(const QModelIndex &index) {
     ui->cameraWgt->resetStatistic();
     QString strStatic = ui->cameraWgt->getStatistic();
     ui->statistic_Lab->setText(strStatic);
+
+    ui->autoExposure_Check->setChecked(true);
+    ui->autoGain_Check->setChecked(true);
 
     displayDeviceInfo(index); // 显示设备信息
 }
@@ -327,5 +342,46 @@ void MainWindow::on_deviceModel_Tree_clicked(const QModelIndex &index) {
     ui->deviceIP_Line->setText(m_deviceInfoList.pDevInfo[currentIndex].DeviceSpecificInfo.gigeDeviceInfo.ipAddress);
     ui->deviceSubnet_Line->setText(m_deviceInfoList.pDevInfo[currentIndex].DeviceSpecificInfo.gigeDeviceInfo.subnetMask);
 
+
+
     ui->setIP_Btn->setEnabled(true);
 }
+
+/**
+ * @author xl-1/4
+ * @version 1.0
+ * @brief TODO Slider和 SpinBox的值联动
+ * @date 2025-09-03
+ */
+void MainWindow::on_exposure_Slider_valueChanged(int value) { // 曝光
+    if (ui->exposure_DSpin->value() != value) {
+        ui->exposure_DSpin->setValue(value);
+        ui->cameraWgt->setAutoExpose(0);
+        ui->cameraWgt->SetExposeTime(value);
+    }
+}
+
+void MainWindow::on_exposure_DSpin_valueChanged(double arg1) {
+    if (ui->exposure_Slider->value() != arg1) {
+        ui->exposure_Slider->setValue(arg1);
+        ui->cameraWgt->setAutoExpose(0);
+        ui->cameraWgt->SetExposeTime(arg1);
+    }
+}
+
+void MainWindow::on_gain_Slider_valueChanged(int value) { // 增益
+    if (ui->gain_DSpin->value() != value) {
+        ui->gain_DSpin->setValue(value);
+        ui->cameraWgt->setGainAuto(0);
+        ui->cameraWgt->SetAdjustPlus(value);
+    }
+}
+
+void MainWindow::on_gain_DSpin_valueChanged(double arg1) {
+    if (ui->gain_Slider->value() != arg1) {
+        ui->gain_Slider->setValue(arg1);
+        ui->cameraWgt->setGainAuto(0);
+        ui->cameraWgt->SetAdjustPlus(arg1);
+    }
+}
+

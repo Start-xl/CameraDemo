@@ -255,55 +255,7 @@
          <layout class="QHBoxLayout" name="horizontalLayout_3">
           <item>
            <layout class="QGridLayout" name="gridLayout">
-            <item row="4" column="0">
-             <widget class="QLabel" name="gain_Lab">
-              <property name="styleSheet">
-               <string notr="true">QLabel {
-    color: #b1b1b1;
-    font-size: 18px;
-    padding: 2px;
-}</string>
-              </property>
-              <property name="text">
-               <string>增益</string>
-              </property>
-             </widget>
-            </item>
-            <item row="3" column="1">
-             <widget class="QCheckBox" name="autoGain_Check">
-              <property name="text">
-               <string/>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="2">
-             <widget class="QDoubleSpinBox" name="frameRate_DSpin"/>
-            </item>
-            <item row="2" column="2">
-             <widget class="QDoubleSpinBox" name="exposure_DSpin"/>
-            </item>
-            <item row="3" column="0">
-             <widget class="QLabel" name="autoGain_Lab">
-              <property name="styleSheet">
-               <string notr="true">QLabel {
-    color: #b1b1b1;
-    font-size: 18px;
-    padding: 2px;
-}</string>
-              </property>
-              <property name="text">
-               <string>自动增益</string>
-              </property>
-             </widget>
-            </item>
-            <item row="4" column="1">
-             <widget class="QSlider" name="gain_Slider">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="0">
+            <item row="0" column="0">
              <widget class="QLabel" name="autoExposure_Lab">
               <property name="styleSheet">
                <string notr="true">QLabel {
@@ -318,27 +270,13 @@
              </widget>
             </item>
             <item row="0" column="1">
-             <widget class="QSlider" name="frameRate_Slider">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="1">
              <widget class="QCheckBox" name="autoExposure_Check">
               <property name="text">
                <string/>
               </property>
              </widget>
             </item>
-            <item row="2" column="1">
-             <widget class="QSlider" name="exposure_Slider">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="0">
+            <item row="1" column="0">
              <widget class="QLabel" name="exposure_Lab">
               <property name="styleSheet">
                <string notr="true">QLabel {
@@ -352,8 +290,31 @@
               </property>
              </widget>
             </item>
-            <item row="0" column="0">
-             <widget class="QLabel" name="frameRate_Lab">
+            <item row="1" column="1">
+             <widget class="QSlider" name="exposure_Slider">
+              <property name="minimum">
+               <number>1</number>
+              </property>
+              <property name="maximum">
+               <number>100000</number>
+              </property>
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="2">
+             <widget class="QDoubleSpinBox" name="exposure_DSpin">
+              <property name="minimum">
+               <double>1.000000000000000</double>
+              </property>
+              <property name="maximum">
+               <double>100000.000000000000000</double>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="0">
+             <widget class="QLabel" name="autoGain_Lab">
               <property name="styleSheet">
                <string notr="true">QLabel {
     color: #b1b1b1;
@@ -362,12 +323,53 @@
 }</string>
               </property>
               <property name="text">
-               <string>帧率</string>
+               <string>自动增益</string>
               </property>
              </widget>
             </item>
-            <item row="4" column="2">
-             <widget class="QDoubleSpinBox" name="gain_DSpin"/>
+            <item row="2" column="1">
+             <widget class="QCheckBox" name="autoGain_Check">
+              <property name="text">
+               <string/>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="0">
+             <widget class="QLabel" name="gain_Lab">
+              <property name="styleSheet">
+               <string notr="true">QLabel {
+    color: #b1b1b1;
+    font-size: 18px;
+    padding: 2px;
+}</string>
+              </property>
+              <property name="text">
+               <string>增益</string>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="1">
+             <widget class="QSlider" name="gain_Slider">
+              <property name="minimum">
+               <number>1</number>
+              </property>
+              <property name="maximum">
+               <number>32</number>
+              </property>
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="2">
+             <widget class="QDoubleSpinBox" name="gain_DSpin">
+              <property name="minimum">
+               <double>1.000000000000000</double>
+              </property>
+              <property name="maximum">
+               <double>32.000000000000000</double>
+              </property>
+             </widget>
             </item>
            </layout>
           </item>

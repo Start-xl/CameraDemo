@@ -46,6 +46,14 @@ private slots:
 
     void on_deviceModel_Tree_clicked(const QModelIndex &index);
 
+    void on_exposure_Slider_valueChanged(int value);
+
+    void on_exposure_DSpin_valueChanged(double arg1);
+
+    void on_gain_Slider_valueChanged(int value);
+
+    void on_gain_DSpin_valueChanged(double arg1);
+
 private:
     Ui::MainWindow *ui;
 

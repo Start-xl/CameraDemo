@@ -525,6 +525,31 @@ bool CameraWgt::setDeviceIP(const QString& deviceIP, const QString& subnetMask, 
     return true;
 }
 
+bool CameraWgt::setAutoExpose(int t) {
+    int ret = IMV_OK;
+    ret = IMV_SetEnumFeatureValue(m_devHandle, "ExposureAuto", t);
+
+    if (IMV_OK != ret)
+    {
+        return false;
+    }
+
+    return true;
+}
+
+bool CameraWgt::setGainAuto(int t) {
+    int ret = IMV_OK;
+
+    ret = IMV_SetEnumFeatureValue(m_devHandle, "GainAuto", t);
+
+    if (IMV_OK != ret)
+    {
+        return false;
+    }
+
+    return true;
+}
+
 // 显示
 // diaplay
 bool CameraWgt::ShowImage(unsigned char* pRgbFrameBuf, int nWidth, int nHeight, IMV_EPixelType nPixelFormat)
@@ -1040,10 +1065,7 @@ void CameraWgt::updateDisplayGeometry() {
     m_displayWnd->setGeometry(finalX, finalY, displayWidth, displayHeight);
 
     if (!IMV_IsGrabbing(m_devHandle)) {
-        // 延迟一点时间确保窗口调整完成
-        QTimer::singleShot(10, this, [this]() {
-            redrawLastFrame();
-        });
+        redrawLastFrame();
     }
 }
 
